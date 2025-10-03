@@ -1,25 +1,97 @@
-<link rel="stylesheet" herf="style.css">
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+    <!--=============== REMIXICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="style.css">
+
+    <title>Peer Skill Swap</title>
 </head>
 <body>
-    
-    <h1> rwan </h1> <br>
-    <p>  shahad </p>
+    <!-- Sidebar -->
+    <nav class="nav">
+        <ul class="nav__list">
+            <a href="#" class="nav__link active-link">
+                <i class="ri-home-2-line"></i>
+                <span class="nav__name">Home</span>
+            </a>
+            <a href="#" class="nav__link">
+                <i class="ri-account-circle-line"></i>
+                <span class="nav__name">My Account</span>
+            </a>
+            <a href="#" class="nav__link">
+                <i class="ri-notification-3-line"></i>
+                <span class="nav__name">Notifications</span>
+            </a>
+            <a href="#" class="nav__link">
+                <i class="ri-chat-1-line"></i>
+                <span class="nav__name">Sessions</span>
+            </a>
+            <a href="#" class="nav__link">
+                <i class="ri-settings-3-line"></i>
+                <span class="nav__name">Settings</span>
+            </a>
+        </ul>
 
+        <!-- Shapes -->
+        <div class="nav__circle-1"></div>
+        <div class="nav__circle-2"></div>
+        <div class="nav__square-1"></div>
+        <div class="nav__square-2"></div>
+    </nav>
 
+    <!-- Main content -->
+    <main>
+        <h2>HI, User!</h2>
+        <div id="postsContainer">
+            <!-- Student posts will appear here -->
+        </div>
+    </main>
 
+    <!-- Floating + button -->
+    <button id="postBtn">
+        <i class="ri-add-line"></i>
+    </button>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <h3>Create a Skill Post</h3>
+
+            <!-- Title -->
+            <input type="text" id="postTitle" placeholder="Post Title" />
+
+            <!-- Type -->
+            <select id="postType">
+                <option value="request">Request</option>
+                <option value="offer">Offer</option>
+            </select>
+
+            <!-- Category -->
+            <select id="postCategory">
+                <option value="language">Language</option>
+                <option value="coding">Coding</option>
+                <option value="math">Math</option>
+                <option value="science">Science</option>
+                <option value="other">Other</option>
+            </select>
+
+            <!-- Description -->
+            <textarea id="skillTextarea" placeholder="Describe your skill..." rows="4"></textarea>
+
+            <div class="modal-footer">
+                <button id="submitSkill">Post</button>
+                <button id="closeModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!--=============== MAIN JS ===============-->
+    <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-git remote add origin https://github.com/rwanAlzahrany/P2P.git
-git branch -M main
-git push -u origin main
