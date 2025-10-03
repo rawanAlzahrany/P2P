@@ -31,7 +31,7 @@ closeModal.addEventListener('click', () => {
     skillTextarea.value = '';
     postTitle.value = '';
     postType.value = 'request';
-    postCategory.value = 'language';
+    postCategory.value = ''; // Reset to placeholder
 });
 
 // Submit new post
@@ -72,7 +72,8 @@ submitSkill.addEventListener('click', () => {
     skillTextarea.value = '';
     postTitle.value = '';
     postType.value = 'request';
-    postCategory.value = 'language';
+    postCategory.value = ''; // Keep placeholder visible
     postModal.style.display = 'none';
 });
+
 
