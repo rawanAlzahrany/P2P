@@ -272,3 +272,30 @@ main {
 .post .three-dots {
   cursor: pointer;
 }
+#postCategory {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    color: black; /* text color */
+}
+
+/* Make placeholder black */
+#postCategory::placeholder {
+    color: black; 
+}#postCategory {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    color: black; /* text color */
+}
+
+/* Make placeholder black */
+#postCategory::placeholder {
+    color: black; 
+}
+
+
