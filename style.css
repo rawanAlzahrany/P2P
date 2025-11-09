@@ -343,16 +343,43 @@ main h2 {
   margin-left: 0px;
   font-size: 1.5rem;
 }
-
-/*=============== POSTS CONTAINER (2 per row) ===============*/
-#postsContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 300px);
-  gap: 14px;
-  margin: 100px 0 0 80px;
-  justify-content: start;
-  max-width: 650px;
+/*=============== POSTS WRAPPER: Requests & Offers side by side ===============*/
+.posts-wrapper {
+  display: flex;
+  gap: 40px; /* space between Requests and Offers columns */
+  margin-left: 80px; /* adjust to your layout */
 }
+
+/* Each column inside the wrapper */
+.posts-wrapper {
+  display: flex;
+  gap: 40px; /* space between Requests and Offers columns */
+  margin-left: 80px; /* adjust to your layout */
+  margin-top: 10px; /* move the whole wrapper down */
+}
+
+/* Titles inside each column */
+.posts-wrapper h3 {
+  margin-top: 30px; /* move title down relative to container */
+  margin-bottom: 30px; /* space between title and posts */
+  font-size: 1.2rem; /* optional */
+}
+
+
+
+/*=============== POSTS CONTAINERS FOR REQUESTS & OFFERS ===============*/
+#requestsContainer {
+  display: grid;
+  grid-template-columns: repeat(1, 300px); /* 2 posts per row */
+  gap: 14px;
+}
+
+#offersContainer {
+  display: grid;
+  grid-template-columns: repeat(1, 300px); /* 2 posts per row */
+  gap: 14px;
+}
+
 
 /*=============== POSTS STYLES + ANIMATION ===============*/
 .post {
@@ -443,8 +470,12 @@ main h2 {
     left: 50%;
     transform: translateX(-50%);
   }
-  #postsContainer {
+  .posts-wrapper {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  #requestsContainer,
+  #offersContainer {
     grid-template-columns: 1fr;
-    margin-left: 20px;
   }
 }

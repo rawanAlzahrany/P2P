@@ -44,29 +44,37 @@
   <!-- Main content -->
   <main>
     <!-- Top bar container -->
-  <div class="top-bar">
-    <!-- Header with logo and search -->
-    <div class="header-bar">
-      <!-- Logo + Shimmering Text -->
-      <div class="logo-container">
-        <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img">
-        <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+    <div class="top-bar">
+      <!-- Header with logo and search -->
+      <div class="header-bar">
+        <!-- Logo + Shimmering Text -->
+        <div class="logo-container">
+          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img">
+          <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="searchBar" placeholder="Search..." autocomplete="off" />
+          <i class="ri-search-line"></i>
+        </div>
       </div>
 
-      <div class="search-box">
-        <input type="text" id="searchBar" placeholder="Search..." autocomplete="off" />
-        <i class="ri-search-line"></i>
+      <ul id="suggestion"></ul>
+
+      <!-- Greeting -->
+      <h2>Hi, User!</h2>
+
+      <!-- Posts wrapper (side by side) -->
+      <div class="posts-wrapper">
+        <div>
+          <h3>Requests</h3>
+          <div id="requestsContainer"></div>
+        </div>
+        <div>
+          <h3>Offers</h3>
+          <div id="offersContainer"></div>
+        </div>
       </div>
-    </div>
-
-    <ul id="suggestion"></ul>
-
-    <!-- Greeting -->
-    <h2>Hi, User!</h2>
-
-    <!-- Posts container -->
-    <div id="postsContainer">
-      <!-- posts injected here dynamically -->
     </div>
   </main>
 

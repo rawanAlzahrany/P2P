@@ -4,8 +4,8 @@ const BASE_URL = 'http://localhost:3000/api/posts';
 // =============== RANDOM PASTEL COLOR ===============
 function getRandomPastelColor() {
     const hue = Math.floor(Math.random() * 360);
-    const saturation = Math.floor(Math.random() * 5) + 95; // 95-100%
-    const lightness = Math.floor(Math.random() * 5) + 95;  // 95-100%
+    const saturation = Math.floor(Math.random() * 5) + 95;
+    const lightness = Math.floor(Math.random() * 5) + 95;
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
@@ -23,12 +23,14 @@ const postModal = document.getElementById('postModal');
 const closeModal = document.getElementById('closeModal');
 const submitSkill = document.getElementById('submitSkill');
 const skillTextarea = document.getElementById('skillTextarea');
-const postsContainer = document.getElementById('postsContainer');
 const postTitle = document.getElementById('postTitle');
 const postType = document.getElementById('postType');
 const postCategory = document.getElementById('postCategory');
 const searchBar = document.getElementById("searchBar");
 const suggestionUL = document.getElementById("suggestion");
+
+const requestsContainer = document.getElementById("requestsContainer");
+const offersContainer = document.getElementById("offersContainer");
 
 // =============== POST / EDIT STATE ===============
 let editingPost = null;
@@ -52,41 +54,30 @@ function resetModal() {
     document.getElementById('modalTitle').textContent = 'Create a Skill Post';
 }
 
-// =============== FETCH POSTS (general) ===============
+// =============== FETCH POSTS (all / by search) ===============
 async function fetchPosts(searchTerm = '') {
-    postsContainer.innerHTML = '';
+    requestsContainer.innerHTML = '';
+    offersContainer.innerHTML = '';
+
     let url = BASE_URL;
     if (searchTerm) url = `${BASE_URL}/search?qry=${encodeURIComponent(searchTerm)}`;
+
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch posts');
         const posts = await response.json();
         if (posts.length === 0) {
-            postsContainer.innerHTML = '<p style="text-align: center; margin-top: 20px;">No posts found.</p>';
+            requestsContainer.innerHTML = '<p>No posts found.</p>';
+            offersContainer.innerHTML = '<p>No posts found.</p>';
         } else {
-            posts.forEach(post => postsContainer.appendChild(createPostElement(post)));
+            posts.forEach(post => {
+                const postElement = createPostElement(post);
+                if (post.type === 'request') requestsContainer.appendChild(postElement);
+                else if (post.type === 'offer') offersContainer.appendChild(postElement);
+            });
         }
     } catch (error) {
         console.error('Error loading posts:', error);
-        postsContainer.innerHTML = '<p style="text-align: center; margin-top: 20px; color: red;">Error loading posts.</p>';
-    }
-}
-
-// =============== FETCH POSTS BY CATEGORY ===============
-async function fetchPostsByCategory(category) {
-    postsContainer.innerHTML = '';
-    try {
-        const response = await fetch(`${BASE_URL}/category/${encodeURIComponent(category)}`);
-        if (!response.ok) throw new Error('Failed to fetch category posts');
-        const posts = await response.json();
-        if (!Array.isArray(posts) || posts.length === 0) {
-            postsContainer.innerHTML = '<p style="text-align: center; margin-top: 20px;">No posts found.</p>';
-        } else {
-            posts.forEach(post => postsContainer.appendChild(createPostElement(post)));
-        }
-    } catch (error) {
-        console.error('Error loading posts by category:', error);
-        postsContainer.innerHTML = '<p style="text-align: center; margin-top: 20px; color: red;">Error loading posts.</p>';
     }
 }
 
@@ -106,7 +97,7 @@ function createPostElement(post) {
 
     const postMeta = document.createElement('div');
     postMeta.classList.add('post-meta');
-    postMeta.textContent = `${displayType} | ${displayCategory}`; // looks like before, no bold
+    postMeta.textContent = `${displayType} | ${displayCategory}`;
 
     const dotsSpan = document.createElement('span');
     dotsSpan.textContent = ' ⋮';
@@ -157,7 +148,7 @@ function createPostElement(post) {
         if (confirm('Are you sure you want to delete this post?')) {
             try {
                 await fetch(`${BASE_URL}/${_id}`, { method: 'DELETE' });
-                if (postDiv.parentElement) postsContainer.removeChild(postDiv);
+                if (postDiv.parentElement) postDiv.parentElement.removeChild(postDiv);
             } catch (error) {
                 console.error('Error deleting post:', error);
                 alert('Could not delete post. Check console.');
@@ -197,7 +188,7 @@ submitSkill.addEventListener('click', async () => {
             const oldPostElement = document.querySelector(`[data-id="${editingPost._id}"]`);
             if (oldPostElement) {
                 const updatedPostElement = createPostElement(newOrUpdatedPost);
-                postsContainer.replaceChild(updatedPostElement, oldPostElement);
+                oldPostElement.parentElement.replaceChild(updatedPostElement, oldPostElement);
             }
         } else {
             response = await fetch(BASE_URL, {
@@ -206,7 +197,9 @@ submitSkill.addEventListener('click', async () => {
                 body: JSON.stringify(postData),
             });
             newOrUpdatedPost = await response.json();
-            postsContainer.prepend(createPostElement(newOrUpdatedPost));
+            const postElement = createPostElement(newOrUpdatedPost);
+            if (type === 'request') requestsContainer.prepend(postElement);
+            else offersContainer.prepend(postElement);
         }
 
         if (!response.ok) throw new Error(newOrUpdatedPost.message || 'Failed to process post');
@@ -233,7 +226,6 @@ searchBar.addEventListener("keyup", async () => {
             suggestionUL.innerHTML = "";
             const seenCategories = new Set();
             suggestions.forEach(s => {
-                // Category clickable
                 if (s.category && !seenCategories.has(s.category)) {
                     const catHeader = document.createElement("li");
                     catHeader.textContent = s.category.charAt(0).toUpperCase() + s.category.slice(1);
@@ -243,7 +235,6 @@ searchBar.addEventListener("keyup", async () => {
                     suggestionUL.appendChild(catHeader);
                     seenCategories.add(s.category);
                 }
-                // Post title
                 const li = document.createElement("li");
                 li.textContent = s.title;
                 suggestionUL.appendChild(li);
@@ -256,7 +247,6 @@ searchBar.addEventListener("keyup", async () => {
     }, 300);
 });
 
-// Click suggestion to fill search bar
 suggestionUL.addEventListener("click", (event) => {
     if (event.target.tagName === "LI" && !event.target.classList.contains("category")) {
         const qry = event.target.textContent;
@@ -267,7 +257,6 @@ suggestionUL.addEventListener("click", (event) => {
     }
 });
 
-// Close dropdowns if clicked outside
 document.addEventListener("click", (event) => {
     if (!event.target.closest(".search-box") && !event.target.closest("#suggestion")) {
         suggestionUL.classList.remove("show");
