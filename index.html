@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <!-- REMIXICONS -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
+  
   <title>Peer Skill Swap</title>
 </head>
 <body>
@@ -35,6 +38,7 @@
       </a>
     </ul>
 
+    <!-- Decorative shapes -->
     <div class="nav__circle-1"></div>
     <div class="nav__circle-2"></div>
     <div class="nav__square-1"></div>
@@ -43,13 +47,12 @@
 
   <!-- Main content -->
   <main>
-    <!-- Top bar container -->
     <div class="top-bar">
+
       <!-- Header with logo and search -->
       <div class="header-bar">
-        <!-- Logo + Shimmering Text -->
         <div class="logo-container">
-          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img">
+          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
           <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
         </div>
 
@@ -59,18 +62,20 @@
         </div>
       </div>
 
+      <!-- Search suggestions -->
       <ul id="suggestion"></ul>
 
       <!-- Greeting -->
       <h2>Hi, User!</h2>
 
-      <!-- Posts wrapper (side by side) -->
+      <!-- Posts wrapper: Requests & Offers side by side -->
       <div class="posts-wrapper">
-        <div>
+        <div class="posts-column">
           <h3>Requests</h3>
           <div id="requestsContainer"></div>
         </div>
-        <div>
+
+        <div class="posts-column">
           <h3>Offers</h3>
           <div id="offersContainer"></div>
         </div>
@@ -78,7 +83,7 @@
     </div>
   </main>
 
-  <!-- Floating + button -->
+  <!-- Floating + button for creating posts -->
   <button id="postBtn" title="Create post">
     <i class="ri-add-line"></i>
   </button>
