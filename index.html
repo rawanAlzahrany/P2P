@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- REMIXICONS -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+  
+  <title>Peer Skill Swap</title>
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="nav">
+    <ul class="nav__list">
+      <a href="#" class="nav__link active-link">
+        <i class="ri-home-2-line"></i>
+        <span class="nav__name">Home</span>
+      </a>
+      <a href="#" class="nav__link">
+        <i class="ri-account-circle-line"></i>
+        <span class="nav__name">My Account</span>
+      </a>
+      <a href="#" class="nav__link">
+        <i class="ri-notification-3-line"></i>
+        <span class="nav__name">Notifications</span>
+      </a>
+      <a href="#" class="nav__link">
+        <i class="ri-chat-1-line"></i>
+        <span class="nav__name">Sessions</span>
+      </a>
+      <a href="#" class="nav__link">
+        <i class="ri-settings-3-line"></i>
+        <span class="nav__name">Settings</span>
+      </a>
+    </ul>
+
+    <!-- Decorative shapes -->
+    <div class="nav__circle-1"></div>
+    <div class="nav__circle-2"></div>
+    <div class="nav__square-1"></div>
+    <div class="nav__square-2"></div>
+  </nav>
+
+  <!-- Main content -->
+  <main>
+    <div class="top-bar">
+
+      <!-- Header with logo and search -->
+      <div class="header-bar">
+        <div class="logo-container">
+          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
+          <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="searchBar" placeholder="Search..." autocomplete="off" />
+          <i class="ri-search-line"></i>
+        </div>
+      </div>
+
+      <!-- Search suggestions -->
+      <ul id="suggestion"></ul>
+
+      <!-- Greeting -->
+      <h2>Hi, User!</h2>
+
+      <!-- Posts wrapper: Requests & Offers side by side -->
+      <div class="posts-wrapper">
+        <div class="posts-column">
+          <h3>Requests</h3>
+          <div id="requestsContainer"></div>
+        </div>
+
+        <div class="posts-column">
+          <h3>Offers</h3>
+          <div id="offersContainer"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating + button for creating posts -->
+  <button id="postBtn" title="Create post">
+    <i class="ri-add-line"></i>
+  </button>
+
+  <!-- Post Modal -->
+  <div id="postModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Create a Skill Post</h3>
+
+      <input type="text" id="postTitle" placeholder="Post Title" />
+
+      <select id="postType">
+        <option value="request">Request</option>
+        <option value="offer">Offer</option>
+      </select>
+
+      <select id="postCategory">
+        <option value="" disabled selected style="color: black;">Category</option>
+        <option value="coding">Coding</option>
+        <option value="math">Math</option>
+        <option value="science">Science</option>
+        <option value="other">Other</option>
+      </select>
+
+      <textarea id="skillTextarea" placeholder="Describe Here ..." rows="4"></textarea>
+
+      <div class="modal-footer">
+        <button id="submitSkill">Post</button>
+        <button id="closeModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

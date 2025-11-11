@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Signup</title>
+
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <div class="auth" id="auth" aria-live="polite">
+   
+    <div class="overlay" aria-hidden="true"></div>
+
+    
+    <section class="pane left">
+      <div class="panel slide slide--signin">
+        <h2 class="title">Sign In</h2>
+
+        <div class="social" aria-label="social sign-in">
+          <button title="Google"><i class='bx bxl-google'></i></button>
+          <button title="Facebook"><i class='bx bxl-facebook'></i></button>
+          <button title="Pinterest"><i class='bx bxl-pinterest'></i></button>
+          <button title="LinkedIn"><i class='bx bxl-linkedin'></i></button>
+        </div>
+
+        <span class="hint">or use your email password</span>
+
+        <form id="form-login" autocomplete="off">
+          <div class="field">
+            <input id="login-email" type="email" placeholder="Email" required/>
+            <i class='bx bx-envelope'></i>
+          </div>
+          <div class="field">
+            <input id="login-pass" type="password" placeholder="Password" required/>
+            <i class='bx bx-lock-alt'></i>
+          </div>
+
+        <button type="button" class="link" id="btn-forgot">Forgot your password?</button>
+        <button class="btn" type="submit">SIGN IN</button>
+        </form>
+      </div>
+
+      
+      <div class="panel slide slide--signup centered">
+        <div class="welcome">
+          <h2 class="title">Welcome Back!</h2>
+          <p class="subtitle">Enter your personal details to use all of site features</p>
+          <button class="btn btn--ghost" type="button" id="to-signin">SIGN IN</button>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="pane right">
+      <div class="panel slide slide--welcome">
+        <div class="welcome">
+          <h2 class="title">Hello, Friend!</h2>
+          <p class="subtitle">Register with your personal details to use all of site features</p>
+          <button class="btn btn--ghost" type="button" id="to-signup">SIGN UP</button>
+        </div>
+      </div>
+
+      <div class="panel slide slide--back">
+        <h2 class="title">Create Account</h2>
+
+        <div class="social" aria-label="social sign-up">
+          <button title="Google"><i class='bx bxl-google'></i></button>
+          <button title="Facebook"><i class='bx bxl-facebook'></i></button>
+          <button title="Pinterest"><i class='bx bxl-pinterest'></i></button>
+          <button title="LinkedIn"><i class='bx bxl-linkedin'></i></button>
+        </div>
+
+        <span class="hint">or use your email for registration</span>
+
+        <form id="form-signup" autocomplete="off">
+          <div class="field">
+            <input id="su-name" type="text" placeholder="Name" required/>
+            <i class='bx bxs-user'></i>
+          </div>
+          <div class="field">
+            <input id="su-email" type="email" placeholder="Email" required/>
+            <i class='bx bx-envelope'></i>
+          </div>
+          <div class="field">
+            <input id="su-pass" type="password" placeholder="Password" required minlength="4"/>
+            <i class='bx bx-lock-alt'></i>
+          </div>
+          <button class="btn" type="submit">SIGN UP</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>
