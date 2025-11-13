@@ -4,7 +4,7 @@
 /*=============== VARIABLES CSS ===============*/
 :root {
   --first-color: hsl(248, 74%, 58%); /* Primary accent color */
-  --black-color: hsl(248, 24%, 10%); /* Dark color for text/backgrounds */
+  --black-color: rgba(21, 19, 32, 1); /* Dark color for text/backgrounds */
   --white-color: #fff; /* White color */
   --body-color: hsl(0, 0%, 100%); /* Page background */
   --body-font: "Poppins", sans-serif; /* Main font */
