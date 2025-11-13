@@ -4,8 +4,8 @@
   "description": "Backend for the Peer Skill Swap application",
   "main": "server.js",
   "scripts": {
-    "start": " cd backend && node server.js",
-    "dev": "cd backend && nodemon server.js"
+    "start": " node backend/server.js",
+    "dev": "nodemon backend/server.js"
   },
   "keywords": [
     "mongodb",
@@ -13,9 +13,11 @@
     "node"
   ],
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.1"
   },
   "devDependencies": {
