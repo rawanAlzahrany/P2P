@@ -1,103 +1,165 @@
-const API = 'http://localhost:3000/api/auth';
+// ================== CONFIG ==================
+const API_BASE_URL = "http://localhost:3000"; // backend server URL
 
-const container   = document.getElementById('auth');
-const toSignupBtn = document.getElementById('to-signup');
-const toSigninBtn = document.getElementById('to-signin');
-const loginForm   = document.getElementById('form-login');
-const signupForm  = document.getElementById('form-signup');
-const forgotBtn   = document.getElementById('btn-forgot');
+// ================== DOM ELEMENTS ==================
+const authForm     = document.getElementById("authForm");
+const formTitle    = document.getElementById("formTitle");
+const toggleText   = document.getElementById("toggleText");
+const toggleAuth   = document.getElementById("toggleAuth");
 
-// Switch animation between panels
-function toggleAuth(toSignup) {
-  container.classList.toggle('active', toSignup);
+const nameField    = document.getElementById("nameField");
+const agreeRow     = document.getElementById("agreeRow");
+const submitBtn    = document.getElementById("submitBtn");
+
+const nameInput    = document.getElementById("name");
+const emailInput   = document.getElementById("email");
+const passwordInput= document.getElementById("password");
+
+const togglePassword = document.getElementById("togglePassword");
+
+// Current mode: true = signup, false = login
+let isSignup = true;
+let isPasswordShown = false;
+
+// ================== PASSWORD EYE ICON ==================
+
+// Render eye icon (open/closed)
+function renderEye() {
+  if (!togglePassword) return;
+
+  if (!isPasswordShown) {
+    // open eye
+    togglePassword.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" fill="#e3e3e3"></circle>
+        <path d="M12 9C10.343 9 9 10.343 9 12C9 13.657 10.343 15 12 15C13.657 15 15 13.657 15 12C15 10.343 13.657 9 12 9Z" stroke="#7d7d7d" stroke-width="2"></path>
+        <path d="M4 12C4 12 7 7 12 7C17 7 20 12 20 12C20 12 17 17 12 17C7 17 4 12 4 12Z" stroke="#7d7d7d" stroke-width="2"></path>
+      </svg>
+    `;
+  } else {
+    // closed eye (slash)
+    togglePassword.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" fill="#e3e3e3"></circle>
+        <path d="M4 12C4 12 7 7 12 7C17 7 20 12 20 12C20 12 17 17 12 17C7 17 4 12 4 12Z" stroke="#7d7d7d" stroke-width="2"></path>
+        <line x1="6" y1="6" x2="18" y2="18" stroke="#7d7d7d" stroke-width="2"></line>
+      </svg>
+    `;
+  }
 }
 
-// Show success/error message below the form
-function showMsg(form, text, ok = false) {
-  let el = form.querySelector('.form-msg');
-  if (!el) {
-    el = document.createElement('p');
-    el.className = 'form-msg';
-    form.appendChild(el);
-  }
-  el.textContent = text || '';
-  el.style.color = ok ? '#16a34a' : '#dc2626';
+// Initial render of the eye icon
+renderEye();
+
+// Toggle password visibility
+if (togglePassword) {
+  togglePassword.addEventListener("click", () => {
+    isPasswordShown = !isPasswordShown;
+    passwordInput.type = isPasswordShown ? "text" : "password";
+    renderEye();
+  });
 }
 
-// Switch to signup / signin
-toSignupBtn.addEventListener('click', () => toggleAuth(true));
-toSigninBtn.addEventListener('click', () => toggleAuth(false));
+// ================== TOGGLE SIGNUP / LOGIN UI ==================
 
-// LOGIN
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  showMsg(loginForm, '');
+// Switch between signup and login modes
+if (toggleAuth) {
+  toggleAuth.addEventListener("click", (e) => {
+    e.preventDefault();
+    isSignup = !isSignup;
 
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-pass').value;
+    if (isSignup) {
+      // SIGN UP MODE
+      formTitle.textContent  = "Sign up";
+      toggleText.textContent = "Already have an account?";
+      toggleAuth.textContent = "Log in";
 
-  if (!email || !password) {
-    showMsg(loginForm, 'Please fill all fields');
-    return;
-  }
+      nameField.style.display = "block";
+      agreeRow.style.display   = "flex";
+      submitBtn.textContent    = "Create account";
+    } else {
+      // LOGIN MODE
+      formTitle.textContent  = "Log in";
+      toggleText.textContent = "Don't have an account?";
+      toggleAuth.textContent = "Sign up";
 
-  try {
-    const res = await fetch(`${API}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+      nameField.style.display = "none";
+      agreeRow.style.display   = "none";
+      submitBtn.textContent    = "Log in";
+    }
+  });
+}
 
-    const json = await res.json();
-    if (!res.ok) {
-      showMsg(loginForm, json.error || 'Login failed');
+// ================== FORM SUBMIT (REGISTER / LOGIN) ==================
+
+if (authForm) {
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email    = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    const name     = nameInput.value.trim();
+
+    if (!email || !password || (isSignup && !name)) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    // Save token and redirect to homepage
-    localStorage.setItem('token', json.token);
-    showMsg(loginForm, 'Logged in ✓', true);
-    window.location.href = './index.html';
-  } catch {
-    showMsg(loginForm, 'Network error');
-  }
-});
+    try {
+      if (isSignup) {
+        // -------- SIGN UP REQUEST --------
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
 
-// SIGN UP
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  showMsg(signupForm, '');
+        const data = await res.json();
 
-  const name = document.getElementById('su-name').value.trim();
-  const email = document.getElementById('su-email').value.trim();
-  const password = document.getElementById('su-pass').value;
+        if (!res.ok) {
+          // error from backend
+          alert(data.error || "Registration failed.");
+          return;
+        }
 
-  if (!name || !email || !password) {
-    showMsg(signupForm, 'Please fill all fields');
-    return;
-  }
+        alert("Account created successfully! You can now log in.");
+        // Switch UI to login mode automatically
+        isSignup = false;
+        formTitle.textContent  = "Log in";
+        toggleText.textContent = "Don't have an account?";
+        toggleAuth.textContent = "Sign up";
+        nameField.style.display = "none";
+        agreeRow.style.display   = "none";
+        submitBtn.textContent    = "Log in";
 
-  try {
-    const res = await fetch(`${API}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-    });
+      } else {
+        // -------- LOGIN REQUEST --------
+        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
 
-    const json = await res.json();
-    if (!res.ok) {
-      showMsg(signupForm, json.error || 'Sign up failed');
-      return;
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.error || "Login failed.");
+          return;
+        }
+
+        // Save JWT token (optional, for protected APIs later)
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        alert("Logged in successfully!");
+
+        // Redirect to home/dashboard after successful login
+        window.location.href = "index.html";
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please make sure the backend server is running.");
     }
-
-    showMsg(signupForm, 'Account created ✓', true);
-    setTimeout(() => toggleAuth(false), 600);
-  } catch {
-    showMsg(signupForm, 'Network error');
-  }
-});
-
-// Forgot password (not implemented yet)
-forgotBtn.addEventListener('click', () => {
-  alert('Password reset flow coming soon');
-});
+  });
+}

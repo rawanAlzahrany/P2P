@@ -2,96 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login / Signup</title>
-
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="login.css" />
 </head>
 <body>
 
-  <div class="auth" id="auth" aria-live="polite">
-   
-    <div class="overlay" aria-hidden="true"></div>
+  <!-- Main glass container -->
+  <div class="auth-card">
 
-    
-    <section class="pane left">
-      <div class="panel slide slide--signin">
-        <h2 class="title">Sign In</h2>
+    <!-- LEFT SIDE -->
+    <div class="auth-hero">
 
-        <div class="social" aria-label="social sign-in">
-          <button title="Google"><i class='bx bxl-google'></i></button>
-          <button title="Facebook"><i class='bx bxl-facebook'></i></button>
-          <button title="Pinterest"><i class='bx bxl-pinterest'></i></button>
-          <button title="LinkedIn"><i class='bx bxl-linkedin'></i></button>
-        </div>
-
-        <span class="hint">or use your email password</span>
-
-        <form id="form-login" autocomplete="off">
-          <div class="field">
-            <input id="login-email" type="email" placeholder="Email" required/>
-            <i class='bx bx-envelope'></i>
-          </div>
-          <div class="field">
-            <input id="login-pass" type="password" placeholder="Password" required/>
-            <i class='bx bx-lock-alt'></i>
-          </div>
-
-        <button type="button" class="link" id="btn-forgot">Forgot your password?</button>
-        <button class="btn" type="submit">SIGN IN</button>
-        </form>
+      <!-- LOGO -->
+      <div class="login-logo">
+        <img src="images/logo.png" alt="SkillSwap Logo" class="login-logo-img">
+        <h2 class="login-logo-text">SkillSwap</h2>
       </div>
 
-      
-      <div class="panel slide slide--signup centered">
-        <div class="welcome">
-          <h2 class="title">Welcome Back!</h2>
-          <p class="subtitle">Enter your personal details to use all of site features</p>
-          <button class="btn btn--ghost" type="button" id="to-signin">SIGN IN</button>
-        </div>
-      </div>
-    </section>
+      <!-- HERO IMAGE -->
+      <img src="images/SignUp.png" class="hero-illustration" alt="Signup Illustration">
+    </div>
 
-    
-    <section class="pane right">
-      <div class="panel slide slide--welcome">
-        <div class="welcome">
-          <h2 class="title">Hello, Friend!</h2>
-          <p class="subtitle">Register with your personal details to use all of site features</p>
-          <button class="btn btn--ghost" type="button" id="to-signup">SIGN UP</button>
-        </div>
-      </div>
+    <!-- RIGHT SIDE -->
+    <div class="auth-form">
 
-      <div class="panel slide slide--back">
-        <h2 class="title">Create Account</h2>
+      <!-- Title -->
+      <h1 id="formTitle">Sign up</h1>
 
-        <div class="social" aria-label="social sign-up">
-          <button title="Google"><i class='bx bxl-google'></i></button>
-          <button title="Facebook"><i class='bx bxl-facebook'></i></button>
-          <button title="Pinterest"><i class='bx bxl-pinterest'></i></button>
-          <button title="LinkedIn"><i class='bx bxl-linkedin'></i></button>
+      <!-- Toggle between signup/login -->
+      <p class="top-link under-title">
+        <span id="toggleText">Already have an account?</span>
+        <a href="#" id="toggleAuth">Log in</a>
+      </p>
+
+      <!-- FORM -->
+      <form id="authForm">
+
+        <!-- NAME FIELD -->
+        <div class="auth-field" id="nameField">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" />
         </div>
 
-        <span class="hint">or use your email for registration</span>
+        <!-- EMAIL -->
+        <div class="auth-field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="example@gmail.com" />
+        </div>
 
-        <form id="form-signup" autocomplete="off">
-          <div class="field">
-            <input id="su-name" type="text" placeholder="Name" required/>
-            <i class='bx bxs-user'></i>
+        <!-- PASSWORD + EYE -->
+        <div class="auth-field password-field">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input id="password" name="password" type="password" placeholder="Enter password" />
+            <span class="toggle-password" id="togglePassword"></span>
           </div>
-          <div class="field">
-            <input id="su-email" type="email" placeholder="Email" required/>
-            <i class='bx bx-envelope'></i>
-          </div>
-          <div class="field">
-            <input id="su-pass" type="password" placeholder="Password" required minlength="4"/>
-            <i class='bx bx-lock-alt'></i>
-          </div>
-          <button class="btn" type="submit">SIGN UP</button>
-        </form>
-      </div>
-    </section>
+        </div>
+
+        <!-- TERMS (hidden in Login mode) -->
+        <div class="agree-row" id="agreeRow">
+          <input id="agree" type="checkbox" />
+          <label for="agree">
+            I agree to the Platform's
+            <span class="link-text">Terms of Service</span> and
+            <span class="link-text">Privacy Policies</span>
+          </label>
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit" class="primary-btn" id="submitBtn">Create account</button>
+
+      </form>
+    </div>
   </div>
 
   <script src="login.js"></script>
