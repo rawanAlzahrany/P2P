@@ -67,29 +67,7 @@
           <a href="index.html" class="backBtn">Back</a>
            </div>
 
-        <div class="contact" data-id="1">
-            <div class="avatar">S</div>
-            <div>
-                <div class="name">Afnan</div>
-                <div class="last">Typing...</div>
-            </div>
-        </div>
-
-        <div class="contact" data-id="2">
-            <div class="avatar">D</div>
-            <div>
-                <div class="name">Our Team</div>
-                <div class="last">Sent a file</div>
-            </div>
-        </div>
-
-        <div class="contact" data-id="3">
-            <div class="avatar">A</div>
-            <div>
-                <div class="name">Rwan</div>
-                <div class="last">Seen 2:10 PM</div>
-            </div>
-        </div>
+        <!-- Chats will be loaded dynamically -->
     </div>
 
     <!-- Chat area -->
@@ -97,6 +75,7 @@
 
         <div class="chat-header" id="chatHeader">
             Me
+            <button id="clearChatBtn" class="clearChatBtn">Clear Chat</button>
         </div>
 
         <div class="messages" id="messages"></div>
@@ -109,6 +88,7 @@
 
 </div>
 
-<script src="chat.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="chat.js"></script>
 </body>
 </html>

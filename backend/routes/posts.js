@@ -13,7 +13,7 @@ function getRandomPastelColor() {
 // GET all posts
 router.get('/', async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 });
+        const posts = await Post.find().populate('author', 'name email').sort({ createdAt: -1 });
         res.json(posts);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -34,7 +34,7 @@ router.get('/search', async (req, res) => {
                 ]
             };
         }
-        const posts = await Post.find(filter).sort({ createdAt: -1 });
+        const posts = await Post.find(filter).populate('author', 'name email').sort({ createdAt: -1 });
         res.json(posts);
     } catch (err) {
         res.status(500).json({ message: 'Error fetching posts', error: err.message });
@@ -75,7 +75,8 @@ router.put('/:id', async (req, res) => {
         // color stays the same
 
         const updatedPost = await post.save();
-        res.json(updatedPost);
+        const populatedPost = await Post.findById(updatedPost._id).populate('author', 'name email');
+        res.json(populatedPost);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
@@ -84,10 +85,9 @@ router.put('/:id', async (req, res) => {
 // DELETE a post
 router.delete('/:id', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findByIdAndDelete(req.params.id);
         if (!post) return res.status(404).json({ message: 'Post not found' });
 
-        await post.remove();
         res.json({ message: 'Post deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -108,7 +108,8 @@ router.get('/suggest', async (req, res) => {
             ]
         })
         .limit(10)
-        .select('title category color'); // include color in suggestions
+        .select('title category color')
+        .populate('author', 'name email'); // include author info
 
         res.status(200).json(posts);
     } catch (err) {

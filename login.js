@@ -147,9 +147,10 @@ if (authForm) {
           return;
         }
 
-        // Save JWT token (optional, for protected APIs later)
-        if (data.token) {
+        // Save JWT token and user info
+        if (data.token && data.user) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
         }
 
         alert("Logged in successfully!");

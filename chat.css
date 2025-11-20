@@ -32,10 +32,20 @@ body {
     gap: 15px;
     border-bottom: 1px solid #f1f1f1;
     cursor: pointer;
+    align-items: center;
 }
 
 .contact:hover {
     background: #f8f8f8;
+}
+
+.contact.active {
+    background: #e8e8ff;
+}
+
+.contact-content {
+    flex: 1;
+    min-width: 0;
 }
 
 .avatar {
@@ -48,15 +58,55 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 18px;
+    flex-shrink: 0;
 }
 
 .name {
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .last {
     font-size: 12px;
     color: gray;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-delete-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px 8px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    display: none;
+}
+
+.contact:hover .contact-delete-btn {
+    display: block;
+}
+
+.contact-delete-btn:hover {
+    color: #ff5252;
+    transform: scale(1.15);
+}
+
+/* Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Chat Section */
@@ -73,6 +123,25 @@ body {
     font-weight: bold;
     background: #fff;
     border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clearChatBtn {
+    padding: 8px 14px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.clearChatBtn:hover {
+    background: #ff5252;
 }
 
 .messages {
@@ -90,6 +159,10 @@ body {
     max-width: 60%;
     border-radius: 10px;
     font-size: 15px;
+}
+
+.message.new-message {
+    animation: slideUp 0.4s ease-out;
 }
 
 .me {
