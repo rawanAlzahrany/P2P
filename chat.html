@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skill Swap</title>
+    <style>
+
+    .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+    flex-wrap: wrap; 
+    gap: 10px;
+}
+
+/* Logo image */
+.logo-img {
+    width: 40px;       
+    height: 40px;      
+    object-fit: contain;
+    flex-shrink: 0;    
+}
+
+/* Title */
+#logoTitle {
+    margin: 0;
+    font-size: 30px;
+    font-weight: bold;
+    flex: 1 1 auto;    
+    min-width: 60px;  
+    margin-left: -2%;  
+}
+
+/* Back button */
+.backBtn {
+    padding: 8px 14px;
+    background: #5a45e3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    flex-shrink: 0;    
+}
+.backBtn:hover {
+    background: #3114ea;
+}
+    </style>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+
+ 
+       
+<div class="chat-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+         <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
+          <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+          <a href="index.html" class="backBtn">Back</a>
+           </div>
+
+        <div class="contact" data-id="1">
+            <div class="avatar">S</div>
+            <div>
+                <div class="name">Afnan</div>
+                <div class="last">Typing...</div>
+            </div>
+        </div>
+
+        <div class="contact" data-id="2">
+            <div class="avatar">D</div>
+            <div>
+                <div class="name">Our Team</div>
+                <div class="last">Sent a file</div>
+            </div>
+        </div>
+
+        <div class="contact" data-id="3">
+            <div class="avatar">A</div>
+            <div>
+                <div class="name">Rwan</div>
+                <div class="last">Seen 2:10 PM</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="chat">
+
+        <div class="chat-header" id="chatHeader">
+            Me
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+            <input type="text" id="msgInput" placeholder="Write a message..." />
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="chat.js"></script>
+</body>
+</html>
