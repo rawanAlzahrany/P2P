@@ -146,6 +146,9 @@ const suggestionUL = document.getElementById("suggestion");
 const requestsContainer = document.getElementById("requestsContainer");
 const offersContainer = document.getElementById("offersContainer");
 
+
+
+
 // ====================== POST / EDIT STATE ======================
 let editingPost = null;
 
@@ -250,7 +253,7 @@ function createPostElement(post) {
     // Start button (only if logged in and not owner)
     const startBtn = document.createElement('button');
     startBtn.classList.add('start-btn');
-    startBtn.textContent = 'Start';
+    startBtn.textContent = 'Connect';
     startBtn.style.display = (currentUser && !isOwner) ? 'block' : 'none';
     
     // Check if user already interacted with this post

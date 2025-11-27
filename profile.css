@@ -1,0 +1,222 @@
+/* ================== PROFILE PANEL ================== */
+.profile-panel {
+  position: absolute;
+  right: 18px;
+  top: 180px;
+  width: 440px;
+  height: 550px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 12px 30px rgba(10,10,30,0.08);
+  z-index: 9999;
+}
+
+.profile-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: hsl(248, 61%, 88%); 
+  border-radius: 5px;
+  margin-bottom: 40px;
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.profile-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:28px;
+  color:#fff;
+}
+
+.profile-basic #pp-name { font-weight:700; margin-bottom:4px; }
+.profile-basic #pp-email { font-size:0.85rem; color:#555; margin-bottom:6px; }
+.profile-basic #pp-role { font-size:0.82rem; color:#777; }
+
+.profile-section { margin-top:12px; }
+
+/* ================== SKILLS BADGES ================== */
+.exp-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.exp-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 2px solid #ccc; /* JS overrides */
+  background: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: default;
+  position: relative;
+  transition: all 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Optional subtle pastel glow under text */
+.exp-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: inherit;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.exp-badge span.skill-text {
+  pointer-events: none; /* only disables the skill text */
+  position: relative;
+  z-index: 1;
+}
+
+/* Remove button */
+.exp-badge .remove {
+  pointer-events: auto; /* ensure button is clickable */
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #aa007a;
+  font-size: 0.85rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+.exp-badge .remove:hover {
+  color: #ff3366;
+}
+
+/* Hover effect for bubbles */
+.exp-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ================== ADD SKILL INPUT ================== */
+.profile-add-row {
+  display:flex;
+  gap:8px;
+  margin-top:6px;
+}
+.profile-add-row input {
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #e6e6ef;
+  font-size:0.9rem;
+}
+.profile-add-row button {
+  padding:8px 12px;
+  border-radius:8px;
+  border:none;
+  background:hsl(248, 74%, 58%); 
+  color:#fff;
+  cursor:pointer;
+  font-weight:500;
+}
+.profile-add-row button:hover {
+  background:hsl(248, 74%, 58%); 
+}
+
+/* ================== PROFILE EDITOR ================== */
+.profile-editor {
+  display:none;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(0,0,0,0.03);
+}
+.profile-editor input {
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #e6e6ef;
+  margin-bottom:8px;
+  font-size:0.9rem;
+}
+#pp-edit-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #6c63ff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+#pp-edit-btn:hover {
+  background: #574fd6;
+}
+
+.editor-actions {
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+.save-btn {
+  background:#6c63ff;
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.save-btn:hover { background:#574fd6; }
+.cancel-btn {
+  background:#f0f0f0;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.cancel-btn:hover { background:#e0e0e0; }
+/* Make Save and Cancel buttons look like the Edit button */
+.editor-actions button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #6c63ff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.editor-actions button:hover {
+  background: #574fd6;
+}
+
+/* ================== HELPER TEXT ================== */
+.helper-text {
+  font-size:0.82rem;
+  color:#666;
+  margin-top:6px;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 900px) {
+  .profile-panel { display:none; }
+}

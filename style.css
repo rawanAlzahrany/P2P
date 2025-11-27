@@ -355,7 +355,7 @@ main h2 {
 .posts-wrapper {
   display: flex;
   gap: 40px; /* space between Requests and Offers columns */
-  margin-left: 80px; /* adjust to layout */
+  margin-left: 30px; /* adjust to layout */
   margin-top: 10px; /* move wrapper down */
 }
 
@@ -369,13 +369,13 @@ main h2 {
 #requestsContainer,
 #offersContainer {
   display: grid;
-  grid-template-columns: 1fr; /* single column */
+  grid-template-columns: repeat(2, 1fr); /* 2 items per row */
   gap: 14px;
 }
 
 /*=============== POST STYLES ===============*/
 .post {
-  width: 220px;
+  width: 200px;
   min-height: 180px;
   max-height: 180px;
   padding: 10px;
@@ -440,21 +440,22 @@ main h2 {
 
 /*=============== START BUTTON ===============*/
 .start-btn {
-  width: 100%;
+  width: 60%;
   padding: 8px 16px;
   margin-top: 10px;
-  background-color: var(--first-color);
-  color: var(--white-color);
-  border: none;
+  background-color: #6b63ff00;  
+    color:  hsl(0, 0%, 0%);   
+   border: 2px solid #6b63ff00; 
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
   font-size: 0.9rem;
   transition: background-color 0.3s;
+   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* subtle shadow */
 }
 
 .start-btn:hover {
-  background-color: hsl(248, 74%, 50%);
+  background-color: hsla(248, 74%, 50%, 0.433);
 }
 
 /*=============== TOAST NOTIFICATIONS ===============*/
