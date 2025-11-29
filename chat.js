@@ -9,9 +9,15 @@ let activeChat = null;
 // ====================== ELEMENTS ======================
 const messagesEl = document.getElementById("messages");
 const chatHeader = document.getElementById("chatHeader");
+const chatTitleContainer = document.getElementById("chatTitleContainer"); // New container
+const chatSubtitle = document.getElementById("chatSubtitle"); // New subtitle
 const input = document.getElementById("msgInput");
 const sendBtn = document.getElementById("sendBtn");
 const sidebar = document.querySelector('.sidebar');
+
+// Renamed buttons to match 'Completed'
+const markCompletedBtn = document.getElementById('markCompletedBtn'); 
+const markNotCompletedBtn = document.getElementById('markNotCompletedBtn'); 
 
 // ====================== INITIALIZATION ======================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -33,6 +39,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         socket.emit('authenticate', token);
     });
     
+    // Listen for accepted connection notification
+    socket.on('chat_accepted', async (data) => {
+        // Only show if it's not the user who accepted
+        if (data.recipientId === currentUser.id) {
+            alert(`Your connection request for post: "${data.postTitle}" has been accepted! A new chat is available.`);
+            // Update chat list
+            await loadChats();
+        }
+    });
+
     socket.on('new_message', async (data) => {
         if (data.chatId === activeChatId) {
             // Update active chat
@@ -58,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load chats
     await loadChats();
     
-    // Check if there's a specific chat to open
+    // Check if there's a specific chat to open (from notification accept)
     const chatId = localStorage.getItem('currentChatId');
     if (chatId) {
         await openChat(chatId);
@@ -70,7 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadChats() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE}/chats`, {
+        // Fetch chats, ensuring only non-archived are shown in the active list
+        const response = await fetch(`${API_BASE}/chats?status=active`, { 
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -100,7 +117,7 @@ function renderChatList() {
         noChats.className = 'contact';
         noChats.innerHTML = `
             <div style="padding: 20px; text-align: center; color: #999;">
-                No chats yet. Start a conversation from a post!
+                No active chats yet. Start a conversation from a post!
             </div>
         `;
         sidebar.appendChild(noChats);
@@ -110,6 +127,9 @@ function renderChatList() {
     chats.forEach(chat => {
         const otherUser = chat.participants.find(p => p._id !== currentUser.id);
         if (!otherUser) return;
+        
+        // Chat title is the post title, subtitle is the other user's name
+        const chatMainTitle = chat.post ? chat.post.title : otherUser.name;
         
         const lastMessage = chat.messages.length > 0 
             ? chat.messages[chat.messages.length - 1] 
@@ -124,9 +144,16 @@ function renderChatList() {
         avatar.textContent = otherUser.name.charAt(0).toUpperCase();
         
         const info = document.createElement('div');
+        
+        // Display post title as main name
         const name = document.createElement('div');
         name.className = 'name';
-        name.textContent = otherUser.name;
+        name.textContent = chatMainTitle; 
+        
+        // Display other user's name as a small detail
+        const userLine = document.createElement('div');
+        userLine.className = 'last'; 
+        userLine.textContent = `with: ${otherUser.name}`;
         
         const last = document.createElement('div');
         last.className = 'last';
@@ -138,11 +165,12 @@ function renderChatList() {
         }
         
         info.appendChild(name);
+        info.appendChild(userLine); // Add user line
         info.appendChild(last);
         contact.appendChild(avatar);
         contact.appendChild(info);
         
-        // Add delete button
+        // Add delete button (kept for general chat list management)
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'contact-delete-btn';
         deleteBtn.innerHTML = '<i class="ri-delete-bin-line"></i>';
@@ -180,16 +208,16 @@ async function openChat(chatId) {
     }
     
     const otherUser = activeChat.participants.find(p => p._id !== currentUser.id);
-    if (chatHeader) {
-        // Clear header but keep the button
-        const clearBtn = chatHeader.querySelector('#clearChatBtn');
-        chatHeader.innerHTML = '';
-        const headerTitle = document.createElement('span');
-        headerTitle.textContent = otherUser ? otherUser.name : 'Chat';
-        chatHeader.appendChild(headerTitle);
-        if (clearBtn) {
-            chatHeader.appendChild(clearBtn);
-        }
+    const postTitle = activeChat.post ? activeChat.post.title : 'General Chat';
+    
+    if (chatTitleContainer) {
+        // Set main title (Post Title) and subtitle (Other User's Name)
+        chatTitleContainer.innerHTML = `
+            <span>${postTitle}</span>
+            <span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666; display: block;">
+                with: ${otherUser ? otherUser.name : 'Unknown User'}
+            </span>
+        `;
     }
     
     renderMessages();
@@ -278,13 +306,94 @@ if (input) {
     });
 }
 
-// ====================== CLEAR CHAT BUTTON ======================
-const clearChatBtn = document.getElementById('clearChatBtn');
-if (clearChatBtn) {
-    clearChatBtn.addEventListener('click', clearChat);
+// ====================== MARK COMPLETED / NOT COMPLETED ACTIONS ======================
+
+if (markCompletedBtn) {
+    markCompletedBtn.addEventListener('click', async () => {
+        if (!activeChatId) {
+            alert('Please select a chat first');
+            return;
+        }
+
+        const confirmMessage = "Are you sure you want to mark this session as completed? It will be archived and moved to your history.";
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE}/chats/${activeChatId}/done`, {
+                method: 'POST', 
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('This session is completed. The chat has been archived.');
+                // Clear active chat view and reload list
+                activeChatId = null;
+                activeChat = null;
+                messagesEl.innerHTML = '';
+                chatTitleContainer.innerHTML = '<span>Me</span><span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666;"></span>';
+                await loadChats();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to mark session as completed.');
+            }
+        } catch (error) {
+            console.error('Error marking session as completed:', error);
+            alert('Error marking session as completed.');
+        }
+    });
 }
 
-// ====================== DELETE CONTACT ======================
+if (markNotCompletedBtn) {
+    markNotCompletedBtn.addEventListener('click', async () => {
+        if (!activeChatId) {
+            alert('Please select a chat first');
+            return;
+        }
+
+        const otherUser = activeChat ? activeChat.participants.find(p => p._id !== currentUser.id) : null;
+        const confirmMessage = `Are you sure you want to end this session? The post will be made public again, and the chat will be archived.`;
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_BASE}/chats/${activeChatId}/undone`, {
+                method: 'POST', 
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const endedByName = currentUser.name;
+                alert(`This session ended by ${endedByName}. The post will return to the main page.`);
+                // Clear active chat view and reload list
+                activeChatId = null;
+                activeChat = null;
+                messagesEl.innerHTML = '';
+                chatTitleContainer.innerHTML = '<span>Me</span><span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666;"></span>';
+                await loadChats();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to mark session as not completed.');
+            }
+        } catch (error) {
+            console.error('Error marking session as not completed:', error);
+            alert('Error marking session as not completed.');
+        }
+    });
+}
+
+
+// ====================== DELETE CONTACT (Archiving is preferred, but keeping this for general cleanup) ======================
 async function deleteContact(chatId) {
     try {
         const token = localStorage.getItem('token');
@@ -308,7 +417,7 @@ async function deleteContact(chatId) {
                 activeChatId = null;
                 activeChat = null;
                 messagesEl.innerHTML = '';
-                chatHeader.textContent = 'Me';
+                chatTitleContainer.innerHTML = '<span>Me</span><span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666;"></span>';
             }
             
             alert('Contact deleted successfully');
@@ -319,41 +428,6 @@ async function deleteContact(chatId) {
     } catch (error) {
         console.error('Error deleting contact:', error);
         alert('Error deleting contact');
-    }
-}
-
-// ====================== CLEAR CHAT ======================
-async function clearChat() {
-    if (!activeChatId) {
-        alert('Please select a chat first');
-        return;
-    }
-
-    if (!confirm('Are you sure you want to delete all messages? This action cannot be undone.')) {
-        return;
-    }
-
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE}/chats/${activeChatId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            messagesEl.innerHTML = '';
-            await loadChats();
-            alert('Chat cleared successfully');
-        } else {
-            const data = await response.json();
-            alert(data.message || 'Failed to clear chat');
-        }
-    } catch (error) {
-        console.error('Error clearing chat:', error);
-        alert('Error clearing chat');
     }
 }
 

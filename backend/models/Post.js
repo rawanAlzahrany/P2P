@@ -24,13 +24,25 @@ const postSchema = new mongoose.Schema({
     trim: true
   },
   color: {
-    type: String, // <-- new field
-    default: null  // optional, will assign when creating post
+    type: String,
+    default: null
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  // NEW: Status to handle archiving/reactivating the post
+  status: { 
+    type: String,
+    enum: ['active', 'archived', 'completed'],
+    default: 'active'
+  },
+  // NEW: Store the user who accepted the connection (only relevant when archived)
+  connectedUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   createdAt: {
     type: Date,

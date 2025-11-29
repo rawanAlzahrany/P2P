@@ -49,6 +49,41 @@
 .backBtn:hover {
     background: #3114ea;
 }
+
+/* New: Chat Header Button Styles */
+.chat-action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-action-buttons button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.3s;
+    flex: 1; /* Make buttons the same size */
+}
+
+/* Changed Button IDs and Colors */
+#markCompletedBtn { 
+    background: #4CAF50; /* Green for 'Completed' */
+    color: white;
+}
+#markCompletedBtn:hover {
+    background: #45A049;
+}
+
+#markNotCompletedBtn { 
+    background: #f44336; /* Red for 'Not Completed' */
+    color: white;
+}
+#markNotCompletedBtn:hover {
+    background: #e53935;
+}
+
     </style>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="chat.css" />
@@ -59,7 +94,6 @@
        
 <div class="chat-container">
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
@@ -67,15 +101,19 @@
           <a href="index.html" class="backBtn">Back</a>
            </div>
 
-        <!-- Chats will be loaded dynamically -->
-    </div>
+        </div>
 
-    <!-- Chat area -->
     <div class="chat">
 
         <div class="chat-header" id="chatHeader">
-            Me
-            <button id="clearChatBtn" class="clearChatBtn">Clear Chat</button>
+            <div id="chatTitleContainer">
+                <span>Me</span>
+                <span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666;"></span>
+            </div>
+            <div class="chat-action-buttons">
+                <button id="markCompletedBtn">Completed</button>
+                <button id="markNotCompletedBtn">Not Completed</button>
+            </div>
         </div>
 
         <div class="messages" id="messages"></div>

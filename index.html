@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- REMIXICONS -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
   
-  <!-- Main CSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Profile Panel CSS -->
   <link rel="stylesheet" href="profile.css" />
   
   <title>Peer Skill Swap</title>
 </head>
 <body>
-  <!-- Sidebar -->
   <nav class="nav">
     <ul class="nav__list">
       <a href="#" class="nav__link active-link">
@@ -36,12 +32,10 @@
         <i class="ri-chat-1-line"></i>
        
       </a>
-      <a href="#" class="nav__link">
-        <i class="ri-settings-3-line"></i>
-       
+      <a href="#" class="nav__link" id="historyNavLink">
+        <i class="ri-history-line"></i> 
       </a>
       
-      <!-- Auth Links -->
       <div id="authLinks">
         <a href="login.html" class="nav__link" id="loginLink">
           <i class="ri-login-box-line"></i>
@@ -62,9 +56,7 @@
     <div class="nav__square-1"></div>
     <div class="nav__square-2"></div>
   </nav>
-  </nav>
 
-  <!-- Notifications Dropdown -->
   <div class="notifications-dropdown" id="notificationsDropdown">
     <div class="notifications-header">
       <h3>Notifications</h3>
@@ -75,10 +67,18 @@
     </div>
   </div>
 
-  <!-- Main content -->
+  <div class="notifications-dropdown" id="historyDropdown" style="display: none;">
+    <div class="notifications-header">
+      <h3>Session History</h3>
+    </div>
+    <div class="notifications-list" id="historyList">
+      <p class="no-history">No completed sessions yet.</p>
+    </div>
+  </div>
+
+
   <main>
     <div class="top-bar">
-      <!-- Header with logo and search -->
       <div class="header-bar">
         <div class="logo-container">
           <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
@@ -90,16 +90,12 @@
         </div>
       </div>
 
-      <!-- Search suggestions -->
       <ul id="suggestion"></ul>
 
-      <!-- Greeting -->
       <h2 id="greeting">Hi, User!</h2>
       
-      <!-- Toast Container -->
       <div id="toastContainer"></div>
 
-      <!-- Posts wrapper: Requests & Offers side by side -->
       <div class="posts-wrapper">
         <div class="posts-column">
           <h3>Requests</h3>
@@ -114,12 +110,10 @@
     </div>
   </main>
 
-  <!-- Floating + button for creating posts -->
   <button id="postBtn" title="Create post">
     <i class="ri-add-line"></i>
   </button>
 
-  <!-- Post Modal -->
   <div id="postModal" class="modal" aria-hidden="true">
     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <h3 id="modalTitle">Create a Skill Post</h3>
@@ -145,10 +139,8 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="script.js"></script>
   <script src="profile.js"></script>
 </body>
 </html>
-

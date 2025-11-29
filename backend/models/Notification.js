@@ -1,3 +1,4 @@
+// models/Notification.js
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
@@ -20,6 +21,12 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  // NEW: Type to specify the kind of notification (e.g., connection request)
+  type: {
+    type: String,
+    enum: ['connection_request', 'system'],
+    default: 'connection_request'
+  },
   read: {
     type: Boolean,
     default: false
@@ -32,4 +39,3 @@ const notificationSchema = new mongoose.Schema({
 
 const Notification = mongoose.model('Notification', notificationSchema);
 module.exports = Notification;
-

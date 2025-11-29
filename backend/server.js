@@ -6,21 +6,25 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken'); 
 
+// Import Models
 const Post = require('./models/Post');
 const Notification = require('./models/Notification');
 const Chat = require('./models/Chat');
 const User = require('./models/User');
+const History = require('./models/History'); 
+
+// Import Routers/Middleware
 const authRouter = require('./routes/auth');
-const profileRouter = require('./routes/prof'); // <-- NEW
-const { authenticate } = require('./middleware/auth');
+const profileRouter = require('./routes/prof'); 
+const postsRouter = require('./routes/posts'); // <-- New Import
+const { authenticate } = require('./middleware/auth'); // Ensure this file exists and exports 'authenticate'
 
 // Load .env file from backend directory
 dotenv.config({ path: path.join(__dirname, '.env') });
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
-
-console.log('MONGO_URI loaded?', !!MONGO_URI);
 
 const app = express();
 const server = http.createServer(app);
@@ -41,7 +45,6 @@ io.on('connection', (socket) => {
 
   socket.on('authenticate', async (token) => {
     try {
-      const jwt = require('jsonwebtoken');
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(decoded.sub);
 
@@ -105,133 +108,36 @@ app.use(express.json());
 
 // ---------------------- ROUTES ----------------------
 app.use('/api/auth', authRouter);
-
-// Profile routes (GET/PUT) now handled in ./routes/prof.js
 app.use('/api/profile', profileRouter);
-
-// ---------------------- POSTS API ----------------------
-// GET all posts
-app.get('/api/posts', async (req, res) => {
-  try {
-    const posts = await Post.find().populate('author', 'name email').sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching posts', error: err.message });
-  }
-});
-
-// CREATE a new post
-app.post('/api/posts', authenticate, async (req, res) => {
-  try {
-    const postData = { ...req.body, author: req.user.id };
-    const newPost = await Post.create(postData);
-    const populatedPost = await Post.findById(newPost._id).populate('author', 'name email');
-    res.status(201).json(populatedPost);
-  } catch (err) {
-    res.status(400).json({ message: 'Invalid post data', error: err.message });
-  }
-});
-
-// UPDATE post
-app.put('/api/posts/:id', authenticate, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    if (post.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'You can only edit your own posts' });
-    }
-
-    const updatedPost = await Post.findByIdAndUpdate(
-      req.params.id, req.body, { new: true, runValidators: true }
-    ).populate('author', 'name email');
-
-    res.status(200).json(updatedPost);
-  } catch (err) {
-    res.status(400).json({ message: 'Error updating post', error: err.message });
-  }
-});
-
-// DELETE post
-app.delete('/api/posts/:id', authenticate, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    if (post.author.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'You can only delete your own posts' });
-    }
-
-    await Post.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: 'Post deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error deleting post', error: err.message });
-  }
-});
-
-// SEARCH posts
-app.get('/api/posts/search', async (req, res) => {
-  try {
-    const { qry } = req.query;
-    if (!qry) return res.status(400).json({ message: 'Search query is required' });
-    const regex = new RegExp(qry, 'i');
-    const posts = await Post.find({
-      $or: [
-        { title: { $regex: regex } },
-        { description: { $regex: regex } },
-        { category: { $regex: regex } }
-      ]
-    }).populate('author', 'name email').sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) {
-    res.status(500).json({ message: 'Error searching posts', error: err.message });
-  }
-});
-
-// SUGGEST posts
-app.get('/api/posts/suggest', async (req, res) => {
-  try {
-    const { qry } = req.query;
-    if (!qry) return res.status(400).json({ message: 'Query is required' });
-    const regex = new RegExp(qry, 'i');
-    const posts = await Post.find({
-      $or: [
-        { title: { $regex: regex } },
-        { category: { $regex: regex } }
-      ]
-    }).limit(10);
-    res.status(200).json(posts);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching suggestions', error: err.message });
-  }
-});
-
-// GET posts by category
-app.get('/api/posts/category/:category', async (req, res) => {
-  try {
-    const category = req.params.category;
-    const posts = await Post.find({
-      category: { $regex: new RegExp(category, 'i') }
-    }).populate('author', 'name email').sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching category posts', error: err.message });
-  }
-});
+app.use('/api/posts', postsRouter); // <-- All POST routes are now handled by the router
 
 // ---------------------- NOTIFICATIONS API ----------------------
+// GET all connection request notifications for the current user
 app.get('/api/notifications', authenticate, async (req, res) => {
   try {
-    const notifications = await Notification.find({ recipient: req.user.id })
+    const notifications = await Notification.find({ recipient: req.user.id, type: 'connection_request' })
       .populate('sender', 'name')
-      .populate('post', 'title')
+      .populate('post', 'title type') // Populate post title and type
       .sort({ createdAt: -1 });
-    res.status(200).json(notifications);
+
+    const formattedNotifications = notifications.map(n => ({
+        _id: n._id,
+        type: 'connection_request',
+        senderName: n.sender.name,
+        senderId: n.sender._id,
+        postId: n.post._id,
+        postTitle: n.post.title,
+        postType: n.post.type,
+        createdAt: n.createdAt
+    }));
+      
+    res.status(200).json(formattedNotifications);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching notifications', error: err.message });
   }
 });
 
+// POST to create a new connection request notification
 app.post('/api/notifications', authenticate, async (req, res) => {
   try {
     const { postId } = req.body;
@@ -242,25 +148,38 @@ app.post('/api/notifications', authenticate, async (req, res) => {
       return res.status(400).json({ message: 'Cannot start chat with your own post' });
     }
 
+    const existingNotification = await Notification.findOne({
+      recipient: post.author._id,
+      sender: req.user.id,
+      post: postId,
+      type: 'connection_request'
+    });
+
+    if (existingNotification) {
+      return res.status(400).json({ message: 'Connection request already sent for this post.' });
+    }
+
     const notification = await Notification.create({
       recipient: post.author._id,
       sender: req.user.id,
       post: postId,
+      type: 'connection_request',
       message: `${req.user.name} wants to connect with you`
     });
 
     const populatedNotification = await Notification.findById(notification._id)
       .populate('sender', 'name')
-      .populate('post', 'title');
+      .populate('post', 'title type');
 
     io.to(`user_${post.author._id}`).emit('new_notification', populatedNotification);
 
-    res.status(201).json(populatedNotification);
+    res.status(201).json({ message: 'Connection request sent successfully.' });
   } catch (err) {
     res.status(400).json({ message: 'Error creating notification', error: err.message });
   }
 });
 
+// DELETE all notifications (kept for 'Clear All' button)
 app.delete('/api/notifications', authenticate, async (req, res) => {
   try {
     const result = await Notification.deleteMany({ recipient: req.user.id });
@@ -270,38 +189,91 @@ app.delete('/api/notifications', authenticate, async (req, res) => {
   }
 });
 
-app.put('/api/notifications/:id/read', authenticate, async (req, res) => {
+// ---------------------- CONNECTION ACTION API ----------------------
+
+// Accept Connection Request (Creates Chat and Archives Post)
+app.post('/api/connections/accept', authenticate, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const notification = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { read: true },
-      { new: true }
+    const { notificationId, postId, senderId } = req.body;
+    const recipientId = req.user.id;
+
+    // 1. Delete the notification
+    await Notification.findByIdAndDelete(notificationId, { session });
+
+    // 2. Archive the post (or mark as in-session)
+    const post = await Post.findByIdAndUpdate(postId, 
+      { status: 'archived', connectedUser: senderId }, 
+      { new: true, session }
     );
-    if (!notification) return res.status(404).json({ message: 'Notification not found' });
-    res.status(200).json(notification);
+    if (!post) { throw new Error('Post not found'); }
+
+    // 3. Create the new chat linked to the post
+    let chat = await Chat.create([{ 
+      participants: [senderId, recipientId],
+      post: postId,
+      status: 'active'
+    }], { session });
+    chat = chat[0];
+
+    // 4. Notify the sender (the person who requested the connection) via socket
+    io.to(`user_${senderId}`).emit('chat_accepted', {
+      recipientId: senderId, 
+      postTitle: post.title,
+      chatId: chat._id
+    });
+    
+    await session.commitTransaction();
+    res.status(200).json({ 
+        message: 'Connection accepted. Chat created.', 
+        chatId: chat._id 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating notification', error: err.message });
+    await session.abortTransaction();
+    res.status(500).json({ message: 'Failed to accept connection', error: err.message });
+  } finally {
+    session.endSession();
+  }
+});
+
+// Reject Connection Request (Just Deletes Notification)
+app.post('/api/connections/reject', authenticate, async (req, res) => {
+  try {
+    const { notificationId } = req.body;
+    await Notification.findByIdAndDelete(notificationId);
+    res.status(200).json({ message: 'Connection rejected. Notification deleted.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to reject connection', error: err.message });
   }
 });
 
 // ---------------------- CHAT API ----------------------
+
+// GET active chats, populating Post data
 app.get('/api/chats', authenticate, async (req, res) => {
   try {
-    const chats = await Chat.find({ participants: req.user.id })
+    // Only fetch chats that are 'active' (not completed or undone/archived)
+    const chats = await Chat.find({ participants: req.user.id, status: 'active' })
       .populate('participants', 'name email')
       .populate('messages.sender', 'name')
+      .populate('post', 'title type') 
       .sort({ lastMessage: -1 });
+      
     res.status(200).json(chats);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching chats', error: err.message });
   }
 });
 
+// POST to start a direct chat (Kept for compatibility)
 app.post('/api/chats', authenticate, async (req, res) => {
   try {
     const { otherUserId } = req.body;
+    // Look for an existing general chat (without a post ID)
     let chat = await Chat.findOne({
-      participants: { $all: [req.user.id, otherUserId] }
+      participants: { $all: [req.user.id, otherUserId] },
+      post: { $exists: false } 
     }).populate('participants', 'name email').populate('messages.sender', 'name');
 
     if (!chat) {
@@ -317,6 +289,97 @@ app.post('/api/chats', authenticate, async (req, res) => {
   }
 });
 
+// Mark session as Completed (Done)
+app.post('/api/chats/:chatId/done', authenticate, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { chatId } = req.params;
+    const chat = await Chat.findById(chatId).populate('participants', 'name').populate('post', 'title');
+
+    if (!chat) return res.status(404).json({ message: 'Chat not found' });
+    if (!chat.participants.some(p => p._id.toString() === req.user.id)) return res.status(403).json({ message: 'Not a participant' });
+    
+    // 1. Update Chat status
+    chat.status = 'completed';
+    await chat.save({ session });
+
+    // 2. Update Post status
+    if (chat.post) {
+      await Post.findByIdAndUpdate(chat.post._id, { status: 'completed' }, { session });
+    }
+
+    // 3. Create History Record
+    const partner = chat.participants.find(p => p._id.toString() !== req.user.id);
+    const historyRecord = {
+        title: chat.post ? chat.post.title : 'Direct Chat Session',
+        post: chat.post ? chat.post._id : null,
+        user: req.user.id,
+        partner: partner ? partner._id : null,
+        partnerName: partner ? partner.name : 'Unknown',
+        startDate: chat.createdAt,
+        endDate: new Date(),
+        status: 'completed',
+        endedBy: req.user.id
+    };
+    await History.create([historyRecord], { session });
+
+    await session.commitTransaction();
+    res.status(200).json({ message: 'This session is completed.' });
+  } catch (err) {
+    await session.abortTransaction();
+    res.status(500).json({ message: 'Failed to mark session as completed', error: err.message });
+  } finally {
+    session.endSession();
+  }
+});
+
+// Mark session as Not Completed (Undone / End Early)
+app.post('/api/chats/:chatId/undone', authenticate, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const { chatId } = req.params;
+    const chat = await Chat.findById(chatId).populate('participants', 'name').populate('post', 'title');
+
+    if (!chat) return res.status(404).json({ message: 'Chat not found' });
+    if (!chat.participants.some(p => p._id.toString() === req.user.id)) return res.status(403).json({ message: 'Not a participant' });
+
+    // 1. Update Chat status to archived
+    chat.status = 'archived';
+    await chat.save({ session });
+    
+    // 2. Reactivate the post
+    if (chat.post) {
+      await Post.findByIdAndUpdate(chat.post._id, { status: 'active', connectedUser: null }, { session });
+    }
+
+    // 3. Create History Record
+    const partner = chat.participants.find(p => p._id.toString() !== req.user.id);
+    const historyRecord = {
+        title: chat.post ? chat.post.title : 'Direct Chat Session',
+        post: chat.post ? chat.post._id : null,
+        user: req.user.id,
+        partner: partner ? partner._id : null,
+        partnerName: partner ? partner.name : 'Unknown',
+        startDate: chat.createdAt,
+        endDate: new Date(),
+        status: 'ended_early',
+        endedBy: req.user.id
+    };
+    await History.create([historyRecord], { session });
+
+    await session.commitTransaction();
+    res.status(200).json({ message: 'Session ended. Post is reactivated.' });
+  } catch (err) {
+    await session.abortTransaction();
+    res.status(500).json({ message: 'Failed to mark session as not completed', error: err.message });
+  } finally {
+    session.endSession();
+  }
+});
+
+// DELETE chat messages (Clear Chat - Kept existing route)
 app.delete('/api/chats/:chatId', authenticate, async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -334,6 +397,7 @@ app.delete('/api/chats/:chatId', authenticate, async (req, res) => {
   }
 });
 
+// DELETE contact (Delete Chat - Kept existing route)
 app.delete('/api/chats/:chatId/contact', authenticate, async (req, res) => {
   try {
     const { chatId } = req.params;
@@ -346,6 +410,42 @@ app.delete('/api/chats/:chatId/contact', authenticate, async (req, res) => {
     res.status(200).json({ message: 'Contact deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting contact', error: err.message });
+  }
+});
+
+
+// ---------------------- HISTORY API ----------------------
+
+// GET user's session history
+app.get('/api/history', authenticate, async (req, res) => {
+  try {
+    const history = await History.find({ 
+      $or: [
+        { user: req.user.id },
+        { partner: req.user.id }
+      ]
+    })
+    .populate('post', 'title type')
+    .sort({ endDate: -1, createdAt: -1 });
+
+    const formattedHistory = history.map(h => {
+        const isUser = h.user.toString() === req.user.id;
+        let partnerName = h.partnerName;
+
+        return {
+            title: h.title,
+            partnerName: partnerName,
+            startDate: h.startDate,
+            endDate: h.endDate,
+            status: h.status,
+            endedBy: h.endedBy.toString() === req.user.id ? 'You' : partnerName,
+            isCreator: isUser
+        };
+    });
+
+    res.status(200).json(formattedHistory);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching history', error: err.message });
   }
 });
 

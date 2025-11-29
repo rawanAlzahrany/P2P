@@ -36,10 +36,7 @@ function initSocket() {
         });
         
         socket.on('new_message', (data) => {
-            // Handle new message if on chat page
-            if (window.location.pathname.includes('chat.html')) {
-                // Will be handled in chat.js
-            }
+            // Handled in chat.js
         });
     }
 }
@@ -133,7 +130,6 @@ function linkColor() {
 navLink.forEach(link => link.addEventListener('click', linkColor));
 
 // ====================== FRONT-END ELEMENTS ======================
-const postBtn = document.getElementById('postBtn');
 const postModal = document.getElementById('postModal');
 const closeModal = document.getElementById('closeModal');
 const submitSkill = document.getElementById('submitSkill');
@@ -146,13 +142,23 @@ const suggestionUL = document.getElementById("suggestion");
 const requestsContainer = document.getElementById("requestsContainer");
 const offersContainer = document.getElementById("offersContainer");
 
+// Notification/History elements
+const notificationsNavLink = document.getElementById('notificationsNavLink');
+const notificationsDropdown = document.getElementById('notificationsDropdown');
+const notificationsList = document.getElementById('notificationsList');
+const notificationBadge = document.getElementById('notificationBadge');
 
+const historyNavLink = document.getElementById('historyNavLink');
+const historyDropdown = document.getElementById('historyDropdown');
+const historyList = document.getElementById('historyList');
 
 
 // ====================== POST / EDIT STATE ======================
 let editingPost = null;
 
 // ====================== MODAL BEHAVIOR ======================
+const postBtn = document.getElementById('postBtn'); 
+
 if (postBtn) {
     postBtn.addEventListener('click', () => {
         if (!currentUser) {
@@ -160,9 +166,9 @@ if (postBtn) {
             window.location.href = 'login.html';
             return;
         }
-        postModal.style.display = 'flex';
-        postModal.setAttribute('aria-hidden', 'false');
-        skillTextarea.focus();
+        if (postModal) postModal.style.display = 'flex';
+        if (postModal) postModal.setAttribute('aria-hidden', 'false');
+        if (skillTextarea) skillTextarea.focus();
     });
 }
 
@@ -171,20 +177,21 @@ if (closeModal) {
 }
 
 function resetModal() {
-    postModal.style.display = 'none';
-    postModal.setAttribute('aria-hidden', 'true');
-    skillTextarea.value = '';
-    postTitle.value = '';
-    postType.value = 'request';
-    postCategory.value = '';
+    if (postModal) postModal.style.display = 'none';
+    if (postModal) postModal.setAttribute('aria-hidden', 'true');
+    if (skillTextarea) skillTextarea.value = '';
+    if (postTitle) postTitle.value = '';
+    if (postType) postType.value = 'request';
+    if (postCategory) postCategory.value = '';
     editingPost = null;
-    document.getElementById('modalTitle').textContent = 'Create a Skill Post';
+    const modalTitle = document.getElementById('modalTitle');
+    if (modalTitle) modalTitle.textContent = 'Create a Skill Post';
 }
 
 // ====================== FETCH POSTS ======================
 async function fetchPosts(searchTerm = '') {
-    requestsContainer.innerHTML = '';
-    offersContainer.innerHTML = '';
+    if (requestsContainer) requestsContainer.innerHTML = '';
+    if (offersContainer) offersContainer.innerHTML = '';
 
     let url = searchTerm ? `${BASE_URL}/posts/search?qry=${encodeURIComponent(searchTerm)}` : `${BASE_URL}/posts`;
 
@@ -194,13 +201,13 @@ async function fetchPosts(searchTerm = '') {
         const posts = await response.json();
 
         if (posts.length === 0) {
-            requestsContainer.innerHTML = '<p>No posts found.</p>';
-            offersContainer.innerHTML = '<p>No posts found.</p>';
+            if (requestsContainer) requestsContainer.innerHTML = '<p>No posts found.</p>';
+            if (offersContainer) offersContainer.innerHTML = '<p>No posts found.</p>';
         } else {
             posts.forEach(post => {
                 const postElement = createPostElement(post);
-                if (post.type === 'request') requestsContainer.appendChild(postElement);
-                else if (post.type === 'offer') offersContainer.appendChild(postElement);
+                if (post.type === 'request' && requestsContainer) requestsContainer.appendChild(postElement);
+                else if (post.type === 'offer' && offersContainer) offersContainer.appendChild(postElement);
             });
         }
     } catch (error) {
@@ -290,7 +297,7 @@ function createPostElement(post) {
             startBtn.style.cursor = 'not-allowed';
         } else {
             startBtn.disabled = false;
-            startBtn.textContent = 'Start';
+            startBtn.textContent = 'Connect';
         }
     });
 
@@ -325,15 +332,16 @@ function createPostElement(post) {
         editBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             editingPost = post;
-            document.getElementById('modalTitle').textContent = 'Edit Skill Post';
-            postTitle.value = title;
-            postType.value = type;
-            postCategory.value = category;
-            skillTextarea.value = description;
-            postModal.style.display = 'flex';
-            postModal.setAttribute('aria-hidden', 'false');
+            const modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) modalTitle.textContent = 'Edit Skill Post';
+            if (postTitle) postTitle.value = title;
+            if (postType) postType.value = type;
+            if (postCategory) postCategory.value = category;
+            if (skillTextarea) skillTextarea.value = description;
+            if (postModal) postModal.style.display = 'flex';
+            if (postModal) postModal.setAttribute('aria-hidden', 'false');
             dropdown.style.display = 'none';
-            skillTextarea.focus();
+            if (skillTextarea) skillTextarea.focus();
         });
 
         deleteBtn.addEventListener('click', async (e) => {
@@ -364,6 +372,81 @@ function createPostElement(post) {
     return postDiv;
 }
 
+// ====================== CREATE / UPDATE POST (FIXED) ======================
+if (submitSkill) {
+    submitSkill.addEventListener('click', async () => {
+        if (!currentUser) {
+            alert('Please login to create a post');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const title = postTitle.value.trim();
+        const type = postType.value.trim().toLowerCase();
+        const category = postCategory.value.trim().toLowerCase() || 'other';
+        const description = skillTextarea.value.trim();
+
+        if (!title || !description || !postCategory.value) {
+            alert('Please fill in Title, Type, Category, and Description.');
+            return;
+        }
+
+        const postData = { title, type, category, description };
+        if (!editingPost) postData.color = getRandomPastelColor();
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Authentication token not found. Please log in.');
+            
+            let response;
+            let newOrUpdatedPost;
+            let method;
+            let url;
+
+            if (editingPost) {
+                method = 'PUT';
+                url = `${BASE_URL}/posts/${editingPost._id}`;
+            } else {
+                method = 'POST';
+                url = `${BASE_URL}/posts`;
+            }
+
+            response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(postData),
+            });
+            
+            newOrUpdatedPost = await response.json();
+            
+            if (response.ok) {
+                if (editingPost) {
+                    const oldPostElement = document.querySelector(`[data-id="${editingPost._id}"]`);
+                    if (oldPostElement) {
+                        const updatedPostElement = createPostElement(newOrUpdatedPost);
+                        oldPostElement.parentElement.replaceChild(updatedPostElement, oldPostElement);
+                    }
+                } else {
+                    const postElement = createPostElement(newOrUpdatedPost);
+                    if (type === 'request' && requestsContainer) requestsContainer.prepend(postElement);
+                    else if (offersContainer) offersContainer.prepend(postElement);
+                }
+                
+                resetModal();
+            } else {
+                throw new Error(newOrUpdatedPost.message || `Failed to save post. HTTP Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Submission Error:', error);
+            alert(error.message || 'Failed to save post. Please check console and try again.');
+        }
+    });
+}
+
+
 // ====================== START CONVERSATION ======================
 async function handleStartConversation(postId, postAuthor) {
     if (!currentUser) {
@@ -385,10 +468,10 @@ async function handleStartConversation(postId, postAuthor) {
         const data = await response.json();
         
         if (response.ok) {
-            showToast('Notification sent!');
+            showToast('Connection request sent!');
             return { success: true };
         } else {
-            showToast(data.message || 'Failed to send notification');
+            showToast(data.message || 'Failed to send connection request');
             return { success: false };
         }
     } catch (error) {
@@ -418,7 +501,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// ====================== NOTIFICATIONS ======================
+// ====================== NOTIFICATIONS MANAGEMENT ======================
 async function updateNotifications() {
     if (!currentUser) return;
 
@@ -432,7 +515,7 @@ async function updateNotifications() {
 
         if (response.ok) {
             const notifications = await response.json();
-            const unreadCount = notifications.filter(n => !n.read).length;
+            const unreadCount = notifications.length;
             updateNotificationBadge(unreadCount);
             renderNotifications(notifications);
         }
@@ -453,131 +536,104 @@ function updateNotificationBadge(count) {
     }
 }
 
+// RENDER NOTIFICATIONS (Still needs the Accept/Reject logic later)
 function renderNotifications(notifications) {
     const list = document.getElementById('notificationsList');
     if (!list) return;
 
+    list.innerHTML = ''; // Clear list content
+
     if (notifications.length === 0) {
-        list.innerHTML = '<p class="no-notifications">No notifications</p>';
+        list.innerHTML = '<p class="no-notifications" style="text-align: center; color: #999;">No notifications</p>';
         return;
     }
 
-    list.innerHTML = notifications.map(notif => `
-        <div class="notification-item ${notif.read ? '' : 'unread'}" data-id="${notif._id}" data-sender="${notif.sender._id}">
-            <div class="notification-content">
-                <strong>${notif.sender.name}</strong>
-                <p>${notif.message}</p>
-                <small>${new Date(notif.createdAt).toLocaleString()}</small>
+    // Now safely integrating the Accept/Reject buttons and detailed rendering
+    notifications.forEach(notif => {
+        const notiEl = document.createElement('div');
+        
+        notiEl.innerHTML = `
+            <div class="notification-item" data-id="${notif._id}" data-sender="${notif.senderId}" style="padding: 10px; border-bottom: 1px solid #eee;">
+                <p style="margin: 0 0 5px; font-size: 14px;">
+                    <span style="font-weight: bold;">${notif.senderName}</span> wants to connect about:
+                    <br>
+                    <span style="font-size: 13px; color: #333;">"${notif.postTitle}" (Type: ${notif.postType})</span>
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 8px;">
+                    <button class="noti-btn noti-accept-btn" 
+                            style="padding: 6px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;"
+                            data-post-id="${notif.postId}" 
+                            data-sender-id="${notif.senderId}"
+                            data-noti-id="${notif._id}"
+                            >Accept</button>
+                            
+                    <button class="noti-btn noti-reject-btn"
+                            style="padding: 6px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;"
+                            data-noti-id="${notif._id}"
+                            >Reject</button>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+        list.appendChild(notiEl);
 
-    // Add click handlers
-    list.querySelectorAll('.notification-item').forEach(item => {
-        item.addEventListener('click', async () => {
-            const notifId = item.dataset.id;
-            const senderId = item.dataset.sender;
-            
-            // Mark as read
-            const token = localStorage.getItem('token');
-            await fetch(`${BASE_URL}/notifications/${notifId}/read`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            // Create or get chat
-            const chatResponse = await fetch(`${BASE_URL}/chats`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ otherUserId: senderId })
-            });
-            
-            if (chatResponse.ok) {
-                const chat = await chatResponse.json();
-                localStorage.setItem('currentChatId', chat._id);
-                window.location.href = 'chat.html';
-            }
+        // Attach event listeners to the dynamically created buttons
+        const acceptBtn = notiEl.querySelector('.noti-accept-btn');
+        const rejectBtn = notiEl.querySelector('.noti-reject-btn');
+
+        if (acceptBtn) acceptBtn.addEventListener('click', () => handleConnectionAction(notif, 'accept'));
+        if (rejectBtn) rejectBtn.addEventListener('click', () => handleConnectionAction(notif, 'reject'));
+    });
+}
+
+// Connection action handler (Accept/Reject logic for redirect)
+async function handleConnectionAction(notification, action) {
+    if (!currentUser) return;
+    
+    const token = localStorage.getItem('token');
+    const url = `${BASE_URL}/connections/${action}`; 
+    
+    const payload = {
+        notificationId: notification._id,
+        postId: notification.postId,
+        senderId: notification.senderId, 
+        recipientId: currentUser.id 
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
         });
-    });
-}
 
-// ====================== CREATE / UPDATE POST ======================
-if (submitSkill) {
-    submitSkill.addEventListener('click', async () => {
-        if (!currentUser) {
-            alert('Please login to create a post');
-            window.location.href = 'login.html';
-            return;
-        }
+        const data = await response.json();
 
-        const title = postTitle.value.trim();
-        const type = postType.value.trim().toLowerCase();
-        const category = postCategory.value.trim().toLowerCase() || 'other';
-        const description = skillTextarea.value.trim();
+        if (response.ok) {
+            // Refresh notifications and posts list
+            updateNotifications(); 
+            fetchPosts(); 
 
-        if (!title || !description || !postCategory.value) {
-            alert('Please fill in Title, Type, Category, and Description.');
-            return;
-        }
-
-        const postData = { title, type, category, description };
-        if (!editingPost) postData.color = getRandomPastelColor();
-
-        try {
-            const token = localStorage.getItem('token');
-            let response;
-            let newOrUpdatedPost;
-
-            if (editingPost) {
-                response = await fetch(`${BASE_URL}/posts/${editingPost._id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(postData),
-                });
-                newOrUpdatedPost = await response.json();
-                
-                if (response.ok) {
-                    const oldPostElement = document.querySelector(`[data-id="${editingPost._id}"]`);
-                    if (oldPostElement) {
-                        const updatedPostElement = createPostElement(newOrUpdatedPost);
-                        oldPostElement.parentElement.replaceChild(updatedPostElement, oldPostElement);
-                    }
-                } else {
-                    throw new Error(newOrUpdatedPost.message || 'Failed to update post');
-                }
-            } else {
-                response = await fetch(`${BASE_URL}/posts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(postData),
-                });
-                newOrUpdatedPost = await response.json();
-                
-                if (response.ok) {
-                    const postElement = createPostElement(newOrUpdatedPost);
-                    if (type === 'request') requestsContainer.prepend(postElement);
-                    else offersContainer.prepend(postElement);
-                } else {
-                    throw new Error(newOrUpdatedPost.message || 'Failed to create post');
-                }
+            if (action === 'accept') {
+                showToast('Connection accepted. Starting chat...');
+                // Store the chatId returned from the backend
+                localStorage.setItem('currentChatId', data.chatId); 
+                window.location.href = 'chat.html';
+            } else if (action === 'reject') {
+                showToast('Connection rejected. Notification dismissed.');
             }
-
-            resetModal();
-        } catch (error) {
-            console.error('Submission Error:', error);
-            alert(error.message || 'Failed to save post. Please try again.');
+        } else {
+            alert(data.error || `Failed to ${action} connection.`);
         }
-    });
+    } catch (error) {
+        console.error(`Error handling ${action}:`, error);
+        alert('Network error. Failed to process connection.');
+    }
 }
+
 
 // ====================== LIVE SEARCH & SUGGESTIONS ======================
 let debounceTimer;
@@ -589,7 +645,7 @@ if (searchBar) {
 
         debounceTimer = setTimeout(async () => {
             fetchPosts(qry);
-            if (!qry) return suggestionUL.classList.remove("show");
+            if (!qry || !suggestionUL) return suggestionUL.classList.remove("show");
 
             try {
                 const response = await fetch(`${BASE_URL}/posts/suggest?qry=${encodeURIComponent(qry)}`);
@@ -606,23 +662,20 @@ if (searchBar) {
                         catHeader.classList.add("category");
                         catHeader.style.cursor = 'pointer';
                         catHeader.addEventListener("click", () => {
-                            fetch(`${BASE_URL}/posts/category/${s.category}`)
-                                .then(res => res.json())
-                                .then(posts => {
-                                    requestsContainer.innerHTML = '';
-                                    offersContainer.innerHTML = '';
-                                    posts.forEach(post => {
-                                        const postElement = createPostElement(post);
-                                        if (post.type === 'request') requestsContainer.appendChild(postElement);
-                                        else offersContainer.appendChild(postElement);
-                                    });
-                                });
+                            fetchPostsByCategory(s.category);
+                            if (suggestionUL) suggestionUL.classList.remove("show");
+                            if (searchBar) searchBar.value = s.category;
                         });
                         suggestionUL.appendChild(catHeader);
                         seenCategories.add(s.category);
                     }
                     const li = document.createElement("li");
                     li.textContent = s.title;
+                    li.addEventListener("click", () => {
+                        if (searchBar) searchBar.value = s.title;
+                        if (suggestionUL) suggestionUL.classList.remove("show");
+                        fetchPosts(s.title);
+                    });
                     suggestionUL.appendChild(li);
                 });
 
@@ -636,16 +689,23 @@ if (searchBar) {
     });
 }
 
-if (suggestionUL) {
-    suggestionUL.addEventListener("click", (event) => {
-        if (event.target.tagName === "LI" && !event.target.classList.contains("category")) {
-            const qry = event.target.textContent;
-            searchBar.value = qry;
-            suggestionUL.innerHTML = "";
-            suggestionUL.classList.remove("show");
-            fetchPosts(qry);
-        }
-    });
+async function fetchPostsByCategory(category) {
+    try {
+        const response = await fetch(`${BASE_URL}/posts/category/${category}`);
+        if (!response.ok) throw new Error('Failed to fetch category posts');
+        const posts = await response.json();
+
+        if (requestsContainer) requestsContainer.innerHTML = '';
+        if (offersContainer) offersContainer.innerHTML = '';
+        
+        posts.forEach(post => {
+            const postElement = createPostElement(post);
+            if (post.type === 'request' && requestsContainer) requestsContainer.appendChild(postElement);
+            else if (offersContainer) offersContainer.appendChild(postElement);
+        });
+    } catch (error) {
+        console.error('Error fetching category posts:', error);
+    }
 }
 
 // Close suggestions & dropdowns when clicking outside
@@ -656,8 +716,6 @@ document.addEventListener("click", (event) => {
     document.querySelectorAll('.post-dropdown').forEach(d => d.style.display = 'none');
     
     // Close notifications dropdown
-    const notificationsDropdown = document.getElementById('notificationsDropdown');
-    const notificationsNavLink = document.getElementById('notificationsNavLink');
     if (notificationsDropdown && notificationsNavLink && 
         !event.target.closest('#notificationsNavLink') && 
         !event.target.closest('.notifications-dropdown')) {
@@ -665,25 +723,110 @@ document.addEventListener("click", (event) => {
     }
 });
 
-// ====================== NOTIFICATIONS DROPDOWN ======================
-function setupNotificationsDropdown() {
-    const notificationsNavLink = document.getElementById('notificationsNavLink');
-    const notificationsDropdown = document.getElementById('notificationsDropdown');
-    const clearNotifications = document.getElementById('clearNotifications');
 
+// ====================== HISTORY MANAGEMENT ======================
+
+function toggleHistory() {
+    if (notificationsDropdown) notificationsDropdown.classList.remove('show');
+    
+    if (historyDropdown) historyDropdown.style.display = historyDropdown.style.display === 'flex' ? 'none' : 'flex';
+    
+    if (historyDropdown && historyDropdown.style.display === 'flex') {
+        fetchHistory();
+    }
+}
+
+async function fetchHistory() {
+    if (!currentUser) return;
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${BASE_URL}/history`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const sessions = await response.json();
+            renderHistory(sessions);
+        } else {
+            console.error('Failed to fetch history.');
+            renderHistory([]);
+        }
+    } catch (error) {
+        console.error('Network error fetching history:', error);
+        renderHistory([]);
+    }
+}
+
+function renderHistory(sessions) {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+
+    list.innerHTML = ''; 
+
+    if (sessions.length === 0) {
+        list.innerHTML = '<p class="no-history" style="text-align: center; color: #999;">No completed sessions yet.</p>';
+        return;
+    }
+
+    sessions.forEach(session => {
+        const historyEl = document.createElement('div');
+        historyEl.className = 'history-item notification-item'; 
+        
+        const partnerName = session.partnerName || 'Unknown User'; 
+        const statusText = session.status === 'completed' ? 'Completed' : 'Ended Early';
+        const statusColor = session.status === 'completed' ? '#4CAF50' : '#f44336';
+        const startDate = session.startDate ? new Date(session.startDate).toLocaleDateString() : 'N/A';
+        const endDate = session.endDate ? new Date(session.endDate).toLocaleDateString() : 'N/A';
+        
+        historyEl.innerHTML = `
+            <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                <p style="margin: 0; padding-bottom: 5px;">
+                    <span style="font-weight: bold;">${session.title || 'Direct Session'}</span>
+                </p>
+                <p style="font-size: 13px; margin: 0; color: #555;">
+                    Partner: ${partnerName}
+                    <br>
+                    Started: ${startDate} | Finished: ${endDate}
+                </p>
+                <p style="font-size: 13px; font-weight: 600; margin: 5px 0 0 0; color: ${statusColor};">
+                    Status: ${statusText} (Ended by: ${session.endedBy})
+                </p>
+            </div>
+        `;
+        
+        list.appendChild(historyEl);
+    });
+}
+
+
+// ====================== NOTIFICATIONS DROPDOWN SETUP ======================
+function setupNotificationsDropdown() {
+    // Attach click handler to the history icon
+    if (historyNavLink) {
+        historyNavLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleHistory();
+        });
+    }
+
+    // Attach click handler to the notification icon
     if (notificationsNavLink) {
         notificationsNavLink.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (notificationsDropdown) {
-                notificationsDropdown.classList.toggle('show');
-                if (notificationsDropdown.classList.contains('show')) {
-                    updateNotifications();
-                }
+            // This is the original logic to show/hide the dropdown
+            if (notificationsDropdown) notificationsDropdown.classList.toggle('show');
+            if (notificationsDropdown && notificationsDropdown.classList.contains('show')) {
+                // Ensure history dropdown is closed when notification opens
+                if (historyDropdown) historyDropdown.style.display = 'none';
+                updateNotifications();
             }
         });
     }
 
+    // Clear all notifications logic
+    const clearNotifications = document.getElementById('clearNotifications');
     if (clearNotifications) {
         clearNotifications.addEventListener('click', async () => {
             const token = localStorage.getItem('token');
@@ -699,28 +842,11 @@ function setupNotificationsDropdown() {
             try {
                 const response = await fetch(`${BASE_URL}/notifications`, {
                     method: 'DELETE',
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
-                
-                const text = await response.text();
-                console.log('Response text:', text);
-                
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    console.error('Failed to parse JSON:', e);
-                    throw new Error('Server returned invalid response: ' + text.substring(0, 100));
-                }
-                
                 if (!response.ok) {
-                    console.error('Server error:', data);
+                    const data = await response.json();
                     throw new Error(data.message || `HTTP ${response.status}: Failed to delete notifications`);
                 }
                 
@@ -733,6 +859,7 @@ function setupNotificationsDropdown() {
         });
     }
 }
+
 
 // ====================== LOGOUT ======================
 function setupLogout() {
