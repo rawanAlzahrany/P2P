@@ -560,20 +560,28 @@ function renderNotifications(notifications) {
                     <span style="font-size: 13px; color: #333;">"${notif.postTitle}" (Type: ${notif.postType})</span>
                 </p>
                 
-                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 8px;">
-                    <button class="noti-btn noti-accept-btn" 
-                            style="padding: 6px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;"
-                            data-post-id="${notif.postId}" 
-                            data-sender-id="${notif.senderId}"
-                            data-noti-id="${notif._id}"
-                            >Accept</button>
-                            
-                    <button class="noti-btn noti-reject-btn"
-                            style="padding: 6px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;"
-                            data-noti-id="${notif._id}"
-                            >Reject</button>
-                </div>
-            </div>
+               <div class="notification-item" data-id="${notif._id}" data-sender="${notif.senderId}">
+    <p>
+        <span class="sender-name">${notif.senderName}</span> wants to connect about:
+        <br>
+        <span class="post-title">"${notif.postTitle}" (Type: ${notif.postType})</span>
+    </p>
+    
+    <div class="notification-actions">
+        <button class="noti-btn noti-accept-btn" 
+                data-post-id="${notif.postId}" 
+                data-sender-id="${notif.senderId}"
+                data-noti-id="${notif._id}">
+            Accept
+        </button>
+        
+        <button class="noti-btn noti-reject-btn"
+                data-noti-id="${notif._id}">
+            Reject
+        </button>
+    </div>
+</div>
+
         `;
         list.appendChild(notiEl);
 

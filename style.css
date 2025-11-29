@@ -438,7 +438,49 @@ main h2 {
   vertical-align: middle;
 }
 
-/*=============== START BUTTON ===============*/
+/*=============== NOTIFS ACC/REJ ===============*/
+
+.noti-accept-btn {
+    padding: 6px;
+    background: #4caf4f00;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1;
+    transition: box-shadow 0.3s, transform 0.2s; /* smooth transition */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* subtle shadow */
+}
+
+.noti-accept-btn:hover {
+    background-color: hsla(126, 74%, 50%, 0.433);
+}
+
+.noti-reject-btn {
+    padding: 6px;
+    background: #f4433600;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1;
+    transition: box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.noti-reject-btn:hover {
+     background-color: hsla(0, 74%, 50%, 0.433);
+}
+
+/* Container remains the same */
+.notification-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+/*=============== Connect BUTTON ===============*/
 .start-btn {
   width: 60%;
   padding: 8px 16px;
