@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skill Swap</title>
+    <style>
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+        background: #fff;
+        flex-wrap: wrap; 
+        gap: 10px;
+    }
+
+    /* Logo image */
+    .logo-img {
+        width: 40px;       
+        height: 40px;      
+        object-fit: contain;
+        flex-shrink: 0;    
+    }
+
+    /* Title */
+    #logoTitle {
+        margin: 0;
+        font-size: 30px;
+        font-weight: bold;
+        flex: 1 1 auto;    
+        min-width: 60px;  
+        margin-left: -2%;  
+    }
+
+    /* Back button */
+    .backBtn {
+        padding: 8px 14px;
+        background: #5a45e3;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        flex-shrink: 0;    
+    }
+    .backBtn:hover {
+        background: #3114ea;
+    }
+
+    /* New: Chat Header Button Styles */
+    .chat-action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-action-buttons button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.3s;
+        flex: 1; /* Make buttons the same size */
+    }
+
+    /*================ HISTORY COMPLETED/NOT COMPLETED BUTTONS ================*/
+
+    #markCompletedBtn { 
+        background: #4caf4f00; /* transparent green effect */
+        color: rgb(0, 0, 0);
+        border: none;
+        border-radius: 4px;
+        padding: 6px;
+        cursor: pointer;
+        flex: 1;
+        transition: box-shadow 0.3s, transform 0.2s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    #markCompletedBtn:hover {
+        background-color: hsla(126, 74%, 50%, 0.433);
+    }
+
+    #markNotCompletedBtn { 
+        background: #f4433600; /* transparent red */
+        color: rgb(0, 0, 0);
+        border: none;
+        border-radius: 4px;
+        padding: 6px;
+        cursor: pointer;
+        flex: 1;
+        transition: box-shadow 0.3s, transform 0.2s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    #markNotCompletedBtn:hover {
+        background-color: hsla(0, 74%, 50%, 0.433);
+    }
+
+    </style>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+
+<div class="chat-container">
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
+            <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+            <a href="index.html" class="backBtn">Back</a>
+        </div>
+    </div>
+
+    <div class="chat">
+
+        <div class="chat-header" id="chatHeader">
+            <div id="chatTitleContainer">
+                <span>Me</span>
+                <span id="chatSubtitle" style="font-size: 12px; font-weight: 400; color: #666;"></span>
+            </div>
+            <div class="chat-action-buttons">
+                <button id="markCompletedBtn">Completed</button>
+                <button id="markNotCompletedBtn">Not Completed</button>
+            </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+            <input type="text" id="msgInput" placeholder="Write a message..." />
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Signup</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+  <!-- Main glass container -->
+  <div class="auth-card">
+
+    <!-- LEFT SIDE -->
+    <div class="auth-hero">
+
+      <!-- LOGO -->
+      <div class="login-logo">
+        <img src="images/logo.png" alt="SkillSwap Logo" class="login-logo-img">
+        <h2 class="login-logo-text">SkillSwap</h2>
+      </div>
+
+      <!-- HERO IMAGE -->
+      <img src="images/SignUp.png" class="hero-illustration" alt="Signup Illustration">
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="auth-form">
+
+      <!-- Title -->
+      <h1 id="formTitle">Sign up</h1>
+
+      <!-- Toggle between signup/login -->
+      <p class="top-link under-title">
+        <span id="toggleText">Already have an account?</span>
+        <a href="#" id="toggleAuth">Log in</a>
+      </p>
+
+      <!-- FORM -->
+      <form id="authForm">
+
+        <!-- NAME FIELD -->
+        <div class="auth-field" id="nameField">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" />
+        </div>
+
+        <!-- EMAIL -->
+        <div class="auth-field">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="example@gmail.com" />
+        </div>
+
+        <!-- PASSWORD + EYE -->
+        <div class="auth-field password-field">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input id="password" name="password" type="password" placeholder="Enter password" />
+            <span class="toggle-password" id="togglePassword"></span>
+          </div>
+        </div>
+
+        <!-- TERMS (hidden in Login mode) -->
+        <div class="agree-row" id="agreeRow">
+          <input id="agree" type="checkbox" />
+          <label for="agree">
+            I agree to the Platform's
+            <span class="link-text">Terms of Service</span> and
+            <span class="link-text">Privacy Policies</span>
+          </label>
+        </div>
+
+        <!-- BUTTON -->
+        <button type="submit" class="primary-btn" id="submitBtn">Create account</button>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>

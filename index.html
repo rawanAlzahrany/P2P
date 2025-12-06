@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+
+  <link rel="stylesheet" href="profile.css" />
+  
+  <title>Peer Skill Swap</title>
+</head>
+<body>
+  <nav class="nav">
+    <ul class="nav__list">
+      <a href="#" class="nav__link active-link">
+        <i class="ri-home-2-line"></i>
+       
+      </a>
+      <a href="#" class="nav__link">
+        <i class="ri-account-circle-line"></i>
+       
+      </a>
+      <a href="#" class="nav__link" id="notificationsNavLink">
+        <i class="ri-notification-3-line"></i>
+      
+        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+      </a>
+      <a href="chat.html" class="nav__link">
+        <i class="ri-chat-1-line"></i>
+       
+      </a>
+      <a href="#" class="nav__link" id="historyNavLink">
+        <i class="ri-history-line"></i> 
+      </a>
+      
+      <div id="authLinks">
+        <a href="login.html" class="nav__link" id="loginLink">
+          <i class="ri-login-box-line"></i>
+          <span class="nav__name">Login</span>
+        </a>
+        <a href="login.html" class="nav__link" id="signupLink">
+          <i class="ri-user-add-line"></i>
+          <span class="nav__name">Sign Up</span>
+        </a>
+        <a href="#" class="nav__link" id="logoutLink" style="display: none;">
+          <i class="ri-logout-box-line"></i>
+         
+        </a>
+      </div>
+    </ul>
+    <div class="nav__circle-1"></div>
+    <div class="nav__circle-2"></div>
+    <div class="nav__square-1"></div>
+    <div class="nav__square-2"></div>
+  </nav>
+
+  <div class="notifications-dropdown" id="notificationsDropdown">
+    <div class="notifications-header">
+      <h3>Notifications</h3>
+      <button id="clearNotifications">Clear All</button>
+    </div>
+    <div class="notifications-list" id="notificationsList">
+      <p class="no-notifications">No notifications</p>
+    </div>
+  </div>
+
+  <div class="notifications-dropdown" id="historyDropdown" style="display: none;">
+    <div class="notifications-header">
+      <h3>Session History</h3>
+    </div>
+    <div class="notifications-list" id="historyList">
+      <p class="no-history">No completed sessions yet.</p>
+    </div>
+  </div>
+
+
+  <main>
+    <div class="top-bar">
+      <div class="header-bar">
+        <div class="logo-container">
+          <img src="images/logo.png" alt="Skill Swap Logo" class="logo-img" />
+          <h1 id="logoTitle" class="shimmer-s">SkillSwap</h1>
+        </div>
+        <div class="search-box">
+          <input type="text" id="searchBar" placeholder="Search..." autocomplete="off" />
+          <i class="ri-search-line"></i>
+        </div>
+      </div>
+
+      <ul id="suggestion"></ul>
+
+      <h2 id="greeting">Hi, User!</h2>
+      
+      <div id="toastContainer"></div>
+
+      <div class="posts-wrapper">
+        <div class="posts-column">
+          <h3>Requests</h3>
+          <div id="requestsContainer"></div>
+        </div>
+
+        <div class="posts-column">
+          <h3>Offers</h3>
+          <div id="offersContainer"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button id="postBtn" title="Create post">
+    <i class="ri-add-line"></i>
+  </button>
+
+  <div id="postModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Create a Skill Post</h3>
+
+      <input type="text" id="postTitle" placeholder="Post Title" />
+      <select id="postType">
+        <option value="request">Request</option>
+        <option value="offer">Offer</option>
+      </select>
+      <select id="postCategory">
+        <option value="" disabled selected style="color: black;">Category</option>
+        <option value="coding">Coding</option>
+        <option value="math">Math</option>
+        <option value="science">Science</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea id="skillTextarea" placeholder="Describe Here ..." rows="4"></textarea>
+
+      <div class="modal-footer">
+        <button id="submitSkill">Post</button>
+        <button id="closeModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="script.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

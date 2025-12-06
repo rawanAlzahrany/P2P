@@ -1,0 +1,1432 @@
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --first-color: hsl(248, 74%, 58%); /* Primary accent color */
+  --black-color: rgba(21, 19, 32, 1); /* Dark color for text/backgrounds */
+  --white-color: #fff; /* White color */
+  --body-color: hsl(0, 0%, 100%); /* Page background */
+  --body-font: "Poppins", sans-serif; /* Main font */
+  --small-font-size: 0.813rem; /* Base small font size */
+
+  /* nav / layout helpers */
+  --nav-width: 72px;    /* width of .nav */
+  --nav-gap: 16px;      /* gap between nav and content */
+
+  /* split-screen helper (adjust if needed) */
+  --top-offset: 160px;
+}
+
+/* Larger font for bigger screens */
+@media screen and (min-width: 1024px) {
+  :root {
+    --small-font-size: 0.875rem;
+  }
+}
+
+/*=============== BASE STYLES ===============*/
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: var(--body-font);
+  background-color: var(--body-color);
+  color: #222;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Reserve space for fixed sidebar so content won't overlap it */
+main {
+
+  margin-inline: 6rem 1rem;
+  padding-block: 2rem;
+  position: relative;
+  /* Ensure content does not overlap the nav: keep an extra left margin calculated from nav */
+  margin-left: calc(var(--nav-width) + var(--nav-gap));
+  box-sizing: border-box;
+}
+
+.nav {
+  width: 72px;
+  height: max-content;
+  position: fixed;
+  inset: 0;
+  margin: auto 0;
+
+}
+
+.nav__list {
+  position: relative;
+  background-color: var(--first-color);
+  padding-block: 120px;
+  border-radius: 0 51px 51px 0;
+  display: grid;
+  justify-content: center;
+  row-gap: 2rem;
+}
+
+.nav__link {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background 0.4s;
+}
+
+.nav__link i {
+  font-size: 1.25rem;
+  color: var(--white-color);
+  transition: color 0.4s;
+}
+
+.nav__link:hover .nav__name {
+  opacity: 1;
+  transform: translateX(48px);
+}
+
+.nav__name {
+  position: absolute;
+  top: 0;
+  transform: translateX(56px);
+  background-color: var(--black-color);
+  color: var(--white-color);
+  font-size: var(--small-font-size);
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 3rem;
+  pointer-events: none;
+  transition: transform 0.5s, opacity 0.5s;
+  opacity: 0;
+}
+
+/* Decorative circles and squares */
+.nav__circle-1,
+.nav__circle-2 {
+  width: 80px;
+  height: 80px;
+  background-color: var(--body-color);
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  z-index: 10;
+}
+
+.nav__circle-1 { top: -78px; }
+.nav__circle-2 { bottom: -78px; }
+
+.nav__square-1,
+.nav__square-2 {
+  width: 35px;
+  height: 40px;
+  background-color: var(--body-color);
+  position: absolute;
+  left: 0;
+  z-index: 1;
+}
+
+.nav__square-1 { top: -39px; }
+.nav__square-2 { bottom: -39px; }
+
+/* Active link styles */
+.active-link {
+  background-color: var(--white-color);
+}
+
+.active-link i {
+  color: var(--first-color);
+}
+
+
+/*=============== FLOATING + BUTTON ===============*/
+#postBtn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--first-color);
+  color: var(--white-color);
+  border: none;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1250;
+}
+
+#postBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/*=============== MODAL STYLES ===============*/
+.modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-content {
+  background-color: var(--white-color);
+  width: 90%;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px; /* prevent too large on big screens */
+}
+
+.modal-content h3 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: var(--black-color);
+}
+
+#postTitle,
+#postType,
+#postCategory,
+#skillTextarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+#skillTextarea { resize: none; }
+
+/* Modal footer buttons */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-footer button {
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#submitSkill {
+  background-color: var(--first-color);
+  color: var(--white-color);
+}
+
+#closeModal {
+  background-color: #ccc;
+  color: var(--black-color);
+}
+
+
+
+#submitSkill:hover,
+#closeModal:hover {
+  opacity: 0.85;
+}
+
+/*=============== LOGO + SHIMMER ===============*/
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  position: absolute;
+  top: 1rem;
+  left: calc(var(--nav-width) + 8px); /* keep it after nav */
+  z-index: 1300;
+}
+
+.logo-img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.logo {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.shimmer-s {
+  background: linear-gradient(
+    90deg,
+    hsl(248, 74%, 58%) 0%,
+    hsl(280, 80%, 70%) 50%,
+    hsl(248, 90%, 67%) 100%
+  );
+  background-size: 300% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shimmer 5s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 250% 0; }
+  100% { background-position: -250% 0; }
+}
+
+/*=============== SEARCH BOX ===============*/
+.search-box {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  height: 40px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  margin: 30px auto 20px auto;
+  margin-top: 6rem;   /* adjust according to logo + button height */
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 50;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 6px;
+  color: #333;
+}
+
+.search-box i {
+  font-size: 18px;
+  color: #777;
+  cursor: pointer;
+}
+
+/*=============== SUGGESTION DROPDOWN ===============*/
+#suggestion {
+  display: none;
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  max-width: 90%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  overflow: hidden;
+}
+
+#suggestion.show { display: block; }
+
+#suggestion li {
+  padding: 10px 14px;
+  color: #333;
+  cursor: pointer;
+  background: #fff;
+}
+
+#suggestion li:hover { background-color: #f5f5f5; }
+
+#suggestion li.category {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  cursor: default;
+}
+
+/*=============== GREETING ===============*/
+main h2 {
+  margin-top: 40px;
+  margin-left: 0px;
+  font-size: 1.5rem;
+  display: inline-block;
+  z-index: 50;
+  position: relative;
+}
+
+/*=============== POSTS WRAPPER ===============*/
+/* Default layout: posts area after profile (profile reserved left space via main margin) */
+.posts-wrapper {
+  display: flex;
+  gap: 40px; /* space between Requests and Offers columns */
+  margin-left: 0;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+
+.posts-wrapper h3 {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+  display: block;
+}
+
+/*=============== POSTS CONTAINERS ===============*/
+/* Base: responsive two-column grids that can shrink */
+#requestsContainer,
+#offersContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* responsive columns */
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+/*=============== POST STYLES ===============*/
+.post {
+  width: 100%; /* fills the grid column */
+  min-height: 180px;
+  /* remove strict max-height so content can flow — smaller screens will use min-height rules */
+  max-height: none;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  background-color: var(--white-color);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s forwards;
+}
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.post h4 { font-size: 1rem; margin: 0; }
+.post .post-meta {
+  font-size: 0.75rem;
+  color: gray;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.post .three-dots { cursor: pointer; font-size: 1.2rem; }
+.post p { font-size: 0.9rem; margin: 0; }
+
+/* Dropdown menu for post actions */
+.post-dropdown {
+  display: none;
+  position: absolute;
+  top: 35px;
+  right: 10px;
+  background-color: var(--white-color);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.post-dropdown button {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.post-dropdown button:hover { background-color: rgba(0, 0, 0, 0.05); }
+
+.post-dropdown button i {
+  margin-right: 8px;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+/*=============== NOTIFS ACC/REJ ===============*/
+.noti-accept-btn {
+  padding: 6px;
+  background: #4caf4f00;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1;
+  transition: box-shadow 0.3s, transform 0.2s; /* smooth transition */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* subtle shadow */
+}
+
+.noti-accept-btn:hover {
+  background-color: hsla(126, 74%, 50%, 0.433);
+}
+
+.noti-reject-btn {
+  padding: 6px;
+  background: #f4433600;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1;
+  transition: box-shadow 0.3s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.noti-reject-btn:hover {
+  background-color: hsla(0, 74%, 50%, 0.433);
+}
+
+/* Container remains the same */
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+/*=============== Connect BUTTON ===============*/
+.start-btn {
+  width: 50%;
+  padding: 6px 12px;
+  margin-top: auto;
+  background-color: #6b63ff00;
+  color: hsl(0, 0%, 0%);
+  border: 2px solid #6b63ff00;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* subtle shadow */
+}
+
+.start-btn:hover {
+  background-color: hsla(248, 74%, 50%, 0.433);
+}
+
+/*=============== TOAST NOTIFICATIONS ===============*/
+#toastContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background-color: var(--black-color);
+  color: var(--white-color);
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 300px;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/*=============== NOTIFICATIONS ===============*/
+#notificationsNavLink {
+  position: relative;
+  display: none; /* Hidden by default, shown when logged in */
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 0 5px;
+  z-index: 10;
+}
+
+.notifications-dropdown {
+  position: fixed;
+  top: 50%;
+  left: 100px;
+  transform: translateY(-50%);
+  width: 420px;
+  max-height: 650px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  display: none;
+  flex-direction: column;
+  z-index: 99999;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.notifications-dropdown.show {
+  display: flex;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.notifications-header {
+  padding: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.notifications-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--black-color);
+  font-weight: 600;
+}
+
+.notifications-header button {
+  background: none;
+  border: none;
+  color: var(--first-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.notifications-header button:hover {
+  background-color: rgba(92, 69, 227, 0.1);
+}
+
+.notifications-list {
+  max-height: 550px;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.notification-item {
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+  background: #fafafa;
+}
+
+.notification-item:hover {
+  background-color: #f0f0f0;
+  transform: translateX(5px);
+}
+
+.notification-item.unread {
+  background-color: #f0f4ff;
+  border-left-color: var(--first-color);
+  box-shadow: 0 2px 8px rgba(92, 69, 227, 0.1);
+}
+
+.notification-content strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--black-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.notification-content p {
+  margin: 6px 0;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.notification-content small {
+  font-size: 0.75rem;
+  color: #999;
+  display: block;
+  margin-top: 4px;
+}
+
+.no-notifications {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+
+
+/*=============== MEDIA QUERIES (mobile) ===============*/
+@media (max-width: 700px) {
+  /* page margins & spacing */
+  main {
+    margin-inline: 1.5rem 1rem; /* reduce left/right gutters on small screens */
+    padding-top: 0.5rem;
+    margin-left: calc(var(--nav-width) + 8px); /* keep small reserved nav gap */
+  }
+
+  /* keep modal responsive but capped */
+  .modal-content {
+    width: 95%;
+    max-width: 500px;
+  }
+
+  .search-box,
+  #suggestion {
+    width: calc(100% - 120px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .posts-wrapper { gap: 20px; }
+
+  /* On small screens → 1 column */
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .notifications-dropdown {
+    width: calc(100vw - 100px);
+    right: -20px;
+  }
+}
+
+
+
+/* Ensure the main content is a flex row */
+.main-content {
+  display: flex !important;
+  gap: 32px !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  box-sizing: border-box !important;
+}
+
+
+.profile-panel {
+  width: 480px !important;
+  min-width: 320px !important;
+  max-width: 480px !important;
+  flex: 0 0 480px !important;
+  box-sizing: border-box !important;
+}
+
+/* Posts area (right side) — side-by-side Requests + Offers */
+.posts-wrapper {
+  display: flex;
+  gap: 32px;
+  flex: 1 1 auto;
+  align-items: flex-start;
+  box-sizing: border-box;
+  margin-left: 0;
+}
+
+/* Columns (left = Requests, right = Offers) */
+.requests-column,
+.offers-column {
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.requests-column h3,
+.offers-column h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   POSTS GRID — ALWAYS 2 COLUMNS ON LARGE SCREENS
+   ========================= */
+#requestsContainer,
+#offersContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* Post cards fill their grid cell */
+.post {
+  width: 150px;
+  box-sizing: border-box;
+  min-height: 190px;
+  max-height: 190px; 
+}
+
+/* ===== Responsive: medium screens ===== */
+@media (max-width: 1000px) {
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+}
+
+/* ===== Responsive: small screens ===== */
+@media (max-width: 780px) {
+  .main-content {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .profile-panel {
+    width: 100% !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
+    margin-bottom: 16px;
+  }
+
+  .posts-wrapper {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* small screen = 1 column */
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ---------------------------
+  Split-screen demo helper:
+  keep Requests | Offers side-by-side
+  and make each column scroll internally
+  --------------------------- */
+
+/* Make main-content layout predictable and free from extra left margin */
+.main-content {
+  display: flex !important;
+  gap: 20px !important;
+  align-items: flex-start;
+  width: 100%;
+  margin-left: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Slightly reduce profile width so posts have more horizontal room on split screen */
+.profile-panel {
+  width: 360px !important;
+  min-width: 320px !important;
+  flex: 0 0 360px !important;
+  box-sizing: border-box !important;
+}
+
+/* POSTS WRAPPER becomes a two-column layout: left = Requests, right = Offers */
+.posts-wrapper {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;   /* two columns: Requests | Offers */
+  gap: 20px;
+  width: calc(100% - 360px);        /* leave space for profile */
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* Each column holds heading + the posts grid; make them fill available area */
+.requests-column,
+.offers-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: calc(100vh - var(--top-offset)); /* visible area in split-screen */
+  min-height: 220px;
+  box-sizing: border-box;
+  overflow: hidden; /* prevent the whole page from scrolling */
+}
+
+/* The inner posts grid (cards) — keep 2 columns per section, cards shrink */
+#requestsContainer,
+#offersContainer {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(90px, 1fr)); /* enforce 2 columns per section */
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;            /* each column scrolls internally if long */
+  padding-right: 6px;          /* space for scrollbar */
+}
+
+/* Make scrollbars subtle*/
+#requestsContainer::-webkit-scrollbar,
+#offersContainer::-webkit-scrollbar {
+  width: 8px;
+}
+#requestsContainer::-webkit-scrollbar-thumb,
+#offersContainer::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: rgba(0,0,0,0.08);
+}
+
+/* Compact the post cards so more fit on-screen */
+.post {
+  width: 100% !important;
+  padding: 8px !important;
+  min-height: 100px !important;
+  box-sizing: border-box !important;
+}
+
+/* Medium screens: reduce profile width slightly so posts remain roomy */
+@media (max-width: 1200px) {
+  .profile-panel { width: 320px !important; flex: 0 0 320px !important; }
+  .posts-wrapper { width: calc(100% - 320px); }
+  #requestsContainer, #offersContainer { grid-template-columns: repeat(2, minmax(80px, 1fr)); }
+}
+
+/* Small screens (mobile) — stack for usability */
+@media (max-width: 780px) {
+  .main-content { flex-direction: column; }
+  .profile-panel { width: 100% !important; flex: 1 1 auto !important; margin-bottom: 16px; }
+  .posts-wrapper { grid-template-columns: 1fr; width: 100%; }
+  #requestsContainer, #offersContainer { grid-template-columns: repeat(2, minmax(80px, 1fr)); height: auto; overflow: visible; }
+  .requests-column, .offers-column { height: auto; overflow: visible; }
+}
+
+
+/* === Make posts narrower & better-proportioned === */
+.profile-panel {
+  width: 360px !important;
+  min-width: 320px !important;
+  flex: 0 0 360px !important;
+}
+
+
+.posts-wrapper {
+  width: calc(100% - 360px) !important;
+  box-sizing: border-box;
+}
+
+#requestsContainer,
+#offersContainer {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(80px, 240px));
+  justify-content: center;  
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.post {
+  padding: 8px;
+  width: 200px;
+  box-sizing: border-box;
+  min-height: 500px;
+  max-height: 180px;
+}
+
+/* Medium screens: make cards slightly smaller to fit */
+@media (max-width: 1100px) {
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(70px, 200px));
+  }
+  .profile-panel { width: 320px !important; flex: 0 0 320px !important; }
+}
+
+/* Small screens: keep two columns but very compact; if that breaks readability, it will stack */
+@media (max-width: 780px) {
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(70px, 160px));
+    gap: 8px;
+  }
+  .profile-panel { width: 100% !important; flex: 1 1 auto !important; }
+}
+
+
+
+/* Allow flex/grid children to shrink properly inside their container */
+#requestsContainer, #offersContainer,
+.requests-column, .offers-column,
+.posts-wrapper, .post {
+  min-width: 0;            /* allow shrinking inside flex/grid */
+  box-sizing: border-box;
+}
+
+
+.post h4,
+.post .post-meta,
+.post p {
+  min-width: 0;            
+  overflow-wrap: anywhere; /* break long words if needed */
+  word-break: break-word;
+  white-space: normal;     
+}
+
+
+.post {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  /* ensure flexible heights */
+  max-height: none;
+  min-height: 100px;
+}
+
+/* Make action row/buttons wrap instead of shrinking to nothing */
+.post .post-meta,
+.post .post-actions,
+.notification-actions,
+.profile-add-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;       /* wrap items to next line instead of collapsing */
+  align-items: center;
+}
+
+/* Connect buttons: let them be flexible */
+.start-btn,
+.post .btn,
+.post .start-btn {
+  white-space: nowrap;   
+  min-width: 0;          
+  width: auto;          
+  flex: 0 0 auto;       
+}
+
+/* On very small screens make buttons full-width for usability */
+@media (max-width: 480px) {
+  .post .post-meta,
+  .post .post-actions {
+    width: 100%;
+  }
+  .start-btn,
+  .post .btn,
+  .post .start-btn {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    white-space: normal;
+    text-align: center;
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  /*reduce card padding to fit more content */
+  .post { padding: 6px !important; min-height: 90px !important; }
+}
+
+
+.post p a,
+.post p span,
+.post p code {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+
+/* ensure nav stays on top and has the exact width */
+.nav {
+  width: var(--nav-width) !important;
+  left: 0;
+  top: 0;
+  position: fixed !important;
+  z-index: 1200 !important; /* above most page content */
+}
+
+/* reserve space on the left of main content so it never covers the nav */
+main {
+  position: relative;
+  z-index: 100; /* below the nav */
+  margin-left: calc(var(--nav-width) + var(--nav-gap)) !important;
+  box-sizing: border-box;
+}
+
+/* protect likely overlapping elements */
+main h2,
+.posts-wrapper,
+#requestsContainer,
+#offersContainer,
+.search-box {
+  z-index: 50;
+  position: relative; 
+}
+
+/* ensure absolute/fixed top elements like logo and postBtn don't cover the nav unexpectedly */
+.logo-container {
+  z-index: 1300;
+}
+#postBtn {
+  z-index: 1250;
+}
+
+/* responsive: when screen is very narrow, shrink the reserved left space but still avoid overlap */
+@media (max-width: 800px) {
+  :root { --nav-gap: 8px; } 
+  main {
+    margin-left: calc(var(--nav-width) + var(--nav-gap)) !important;
+  }
+}
+
+
+main .absolute-left,
+main [style*="left: 0px"] {
+  left: calc(var(--nav-width) + var(--nav-gap)) !important;
+}
+
+
+/*=============== POSTS WRAPPER SIDE-BY-SIDE ===============*/
+.posts-wrapper {
+  display: grid;
+  gap: 5px; /* space between Requests and Offers */
+  grid-template-columns: repeat(2, 1fr); 
+  margin-left: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  overflow-x: hidden; /* default, scroll only if needed */
+}
+
+/* POSTS CONTAINERS */
+#requestsContainer,
+#offersContainer {
+  display: grid;
+  grid-template-columns:repeat(180px, 1fr);
+  flex: 1;
+}
+
+/* POSTS */
+.post {
+  width: 180px;   /* matches the grid column width */
+  min-height: 220px; /* taller posts */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+  background-color: var(--white-color);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s forwards;
+}
+
+/*=============== SMALL SCREEN SCROLL (Requests/Offers separate) ===============*/
+@media (max-width: 900px) {
+  .posts-wrapper {
+    
+    grid-template-columns: 1fr 1fr; /* still two columns but smaller */
+    margin-left: 1rem;
+  }
+
+  #requestsContainer,
+  #offersContainer {
+    max-height: 380px; /* 2 rows visible */
+    overflow-y: auto; /* scroll inside container */
+    flex: 0 0 auto; /* maintain width */
+    grid-template-columns: repeat(2, minmax(120px, 1fr)); 
+  }
+}
+
+
+
+
+
+
+/* ---------- POSTS / PROFILE RESPONSIVE LAYOUT ---------- */
+/* Use grid for the outer posts-wrapper so we can switch between
+   two-side-by-side columns and a single stacked column cleanly. */
+.posts-wrapper {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr 1fr; /* Requests column | Offers column on wide screens */
+  align-items: start;
+  width: auto;
+  box-sizing: border-box;
+  margin-top: 10px;
+  /* remove any hard left margin here — control spacing via main or dedicated rule */
+}
+
+/* Each column (Requests / Offers) holds heading + posts grid */
+.requests-column,
+.offers-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+/* Inside each column: keep two post cards per row but keep cards narrow */
+#requestsContainer,
+#offersContainer {
+  display: grid;
+  gap: 12px;
+  /* Two cards per row within the section; cards can shrink to 120px but grow as needed */
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  box-sizing: border-box;
+  width: 100%;
+}
+
+
+.post {
+  width: 100%;
+  max-width: 240px;    
+  min-height: 220px;   
+  max-height: none;   
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Keep connect button small and at the bottom */
+.start-btn {
+  margin-top: auto;
+  width: 48%;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+/* ---------------- Responsive breakpoints ---------------- */
+
+/* Medium screens: slightly smaller card columns */
+@media (max-width: 1100px) {
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+  }
+  .post { min-height: 200px; max-width: 220px; }
+}
+
+@media (max-width: 900px) {
+  .posts-wrapper {
+    grid-template-columns: 1fr; 
+    width: 100%;
+    gap: 20px;
+  }
+
+
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(90px, 1fr));
+    gap: 10px;
+  }
+
+  
+  .post {
+    min-height: 180px;
+    max-width: none;
+    width: 100%;
+    padding: 8px;
+  }
+}
+
+/* Very small screens (mobile)  */
+@media (max-width: 480px) {
+  #requestsContainer,
+  #offersContainer {
+    grid-template-columns: repeat(2, minmax(70px, 1fr));
+    gap: 8px;
+  }
+  .post { min-height: 140px; padding: 6px; }
+}
+
+/* ---------- Prevent large right whitespace ----------*/
+   
+.posts-wrapper,
+#requestsContainer,
+#offersContainer {
+  max-width: 100%;
+}
+
+
+.posts-container {
+  display: flex;
+  flex-direction: column;  /* keeps offers under requests */
+  gap: 20px;
+  overflow-x: auto;       
+}
+
+
+.post-card {
+  width: 200px;          
+  min-width: 200px;      /* never smaller than 220 unless screen forces it */
+  max-width: 100%;       /* allows shrinking when screen is small */
+  
+  height: 180px;       /* default height */
+  min-height: 180px;   /* never smaller */
+ 
+
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+
+
+.post {
+ width: 100%;
+ max-width:100%;
+ min-width: 0;
+box-sizing: border-box;
+
+
+}
+
+.main-content {
+  padding-right: 40px;
+}
+
+
+
+@media (max-width: 600px) {
+  .post {
+    width: 160px !important;
+    min-width: 160px !important;
+  }
+}
+
+
+
+.start-btn {
+  width: 50%;
+  padding: 4px 10px;
+  margin-top: auto;
+  background-color: #6b63ff00;
+  color: hsl(0, 0%, 0%);
+  border: 2px solid #6b63ff00;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* subtle shadow */
+}
+
+
+
+
+
+/* ========== FULL SCREEN / LARGE SCREENS ========== */
+.posts-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Requests | Offers side by side */
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Each column holds heading + posts grid */
+.requests-column,
+.offers-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Inner posts grid for both sections */
+#requestsContainer,
+#offersContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 220px); /* 2 columns of 220px */
+  gap: 12px;
+  width: 100%;
+  justify-content: start;
+}
+
+.post {
+  width: 220px;
+  height: 180px;
+  min-height: 180px;
+  max-height: 180px;
+  box-sizing: border-box;
+}
+
+/* ========== SMALL SCREENS (<900px) ========== */
+@media (max-width: 900px) {
+  .posts-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;  /* stack Requests on top, Offers below */
+    gap: 24px;
+    width: 100%;
+  }
+
+  /* Requests stay on top with 2 columns */
+  #requestsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr)); /* shrink if needed */
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* Offers below Requests with 2 columns */
+  #offersContainer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr)); /* shrink if needed */
+    gap: 12px;
+    width: 100%;
+  }
+
+ @media (max-width: 900px) {
+  .post {
+    width: 100%;           /* fill its grid cell */
+    min-width: 0;          /* allow shrinking */
+    height: auto;          /* allow height to grow */
+    min-height: 180px;     /* default minimum */
+    max-height: none;      /* remove old max-height */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  /* keep button at bottom */
+  .post .start-btn {
+    margin-top: auto;      /* push to bottom of flex column */
+    flex: 0 0 auto;        /* don’t stretch button */
+  }
+}
+}
+
+
+
